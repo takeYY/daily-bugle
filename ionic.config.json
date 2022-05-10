@@ -1,0 +1,7 @@
+{
+  "name": "daily-horn",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
