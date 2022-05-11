@@ -24,10 +24,12 @@ export class AuthService {
   }
 
   authSignIn(login: { email: string; password: string }) {
-    return signInWithEmailAndPassword(this.afAuth, login.email, login.password).catch((error) => {
-      this.alertError(error);
-      throw error;
-    });
+    return signInWithEmailAndPassword(this.afAuth, login.email, login.password)
+      .then(() => this.navController.navigateForward('/'))
+      .catch((error) => {
+        this.alertError(error);
+        throw error;
+      });
   }
 
   authSignOut() {
