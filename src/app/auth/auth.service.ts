@@ -1,13 +1,18 @@
 import { Injectable } from '@angular/core';
 import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from '@angular/fire/auth';
-import { NavController, AlertController } from '@ionic/angular';
+import { NavController, AlertController, ToastController } from '@ionic/angular';
 import { firebaseError } from './firebase.error';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(public afAuth: Auth, public navController: NavController, public alertController: AlertController) {}
+  constructor(
+    public afAuth: Auth,
+    public navController: NavController,
+    public alertController: AlertController,
+    public toastController: ToastController,
+  ) {}
 
   async getUserId(): Promise<string> {
     const user = await this.afAuth.currentUser;
@@ -16,7 +21,16 @@ export class AuthService {
 
   authSignUp(login: { email: string; password: string }) {
     return createUserWithEmailAndPassword(this.afAuth, login.email, login.password)
-      .then(() => this.navController.navigateForward('/'))
+      .then(() => {
+        this.navController.navigateForward('/').then(async () => {
+          const toast = await this.toastController.create({
+            message: 'ユーザ登録に成功しました。',
+            duration: 3000,
+            position: 'top',
+          });
+          await toast.present();
+        });
+      })
       .catch((error) => {
         this.alertError(error);
         throw error;
@@ -25,7 +39,16 @@ export class AuthService {
 
   authSignIn(login: { email: string; password: string }) {
     return signInWithEmailAndPassword(this.afAuth, login.email, login.password)
-      .then(() => this.navController.navigateForward('/'))
+      .then(() => {
+        this.navController.navigateForward('/').then(async () => {
+          const toast = await this.toastController.create({
+            message: 'ログインしました。',
+            duration: 3000,
+            position: 'top',
+          });
+          await toast.present();
+        });
+      })
       .catch((error) => {
         this.alertError(error);
         throw error;
@@ -35,7 +58,16 @@ export class AuthService {
   authSignOut() {
     return this.afAuth
       .signOut()
-      .then(() => this.navController.navigateRoot('/auth/signin'))
+      .then(() => {
+        this.navController.navigateRoot('/auth/signin').then(async () => {
+          const toast = await this.toastController.create({
+            message: 'ログアウトしました。',
+            duration: 3000,
+            position: 'top',
+          });
+          await toast.present();
+        });
+      })
       .catch((error) => {
         this.alertError(error);
         throw error;
