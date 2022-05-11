@@ -1,7 +1,56 @@
-<ion-header>
+<ion-header [translucent]="true">
   <ion-toolbar>
+    <div slot="start"></div>
+    <div slot="end">
+      <ion-fab-button (click)="toggleReorderGroup()" size="small" color="light" background-color="transparent">
+        <ion-icon name="filter"></ion-icon>
+      </ion-fab-button>
+    </div>
+
     <ion-title>{{ title }}</ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-toolbar>
+      <ion-segment [(ngModel)]="scene" (ionChange)="segmentChanged($event)">
+        <ion-segment-button value="everyday" checked>
+          <ion-label>毎日</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="week">
+          <ion-label>週一</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="weekday">
+          <ion-label>曜日</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </ion-toolbar>
   </ion-toolbar>
 </ion-header>
 
-<ion-content> </ion-content>
+<ion-content [fullscreen]="true">
+  <div [ngSwitch]="scene">
+    <div *ngSwitchCase="'everyday'">
+      <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="true">
+        <ion-item *ngFor="let c of dummy_everyday_contents">
+          <ion-label> {{ c }} </ion-label>
+          <ion-reorder slot="end"></ion-reorder>
+        </ion-item>
+      </ion-reorder-group>
+    </div>
+    <div *ngSwitchCase="'week'">
+      <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="true">
+        <ion-item *ngFor="let c of dummy_week_contents">
+          <ion-label> {{ c }} </ion-label>
+          <ion-reorder slot="end"></ion-reorder>
+        </ion-item>
+      </ion-reorder-group>
+    </div>
+    <div *ngSwitchCase="'weekday'">
+      <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="true">
+        <ion-item *ngFor="let c of dummy_weekday_contents">
+          <ion-label> {{ c }} </ion-label>
+          <ion-reorder slot="end"></ion-reorder>
+        </ion-item>
+      </ion-reorder-group>
+    </div>
+  </div>
+</ion-content>
