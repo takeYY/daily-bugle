@@ -26,6 +26,15 @@ const routes: Routes = [
           },
         ],
       },
+      {
+        path: 'usual',
+        children: [
+          {
+            path: '',
+            loadChildren: () => import('./usual/usual.module').then((m) => m.UsualPageModule),
+          },
+        ],
+      },
     ],
   },
   {
