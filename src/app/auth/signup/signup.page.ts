@@ -7,16 +7,23 @@ import { AuthService } from '../auth.service';
   styleUrls: ['./signup.page.scss'],
 })
 export class SignupPage implements OnInit {
-  loading = false;
+  loading: boolean;
+  title: string;
   login: {
     email: string;
     password: string;
-  } = {
-    email: null,
-    password: null,
+    passwordConfirmation: string;
   };
 
-  constructor(public auth: AuthService) {}
+  constructor(public auth: AuthService) {
+    this.title = 'アカウント作成';
+    this.loading = false;
+    this.login = {
+      email: null,
+      password: null,
+      passwordConfirmation: null,
+    };
+  }
 
   ngOnInit() {}
 

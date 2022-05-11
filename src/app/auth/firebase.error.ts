@@ -7,6 +7,10 @@ export const firebaseError = {
     code: 'パスワードの間違い',
     message: 'パスワードが間違っています。',
   },
+  'auth/mismatch-password-confirmation': {
+    code: 'パスワードの不一致',
+    message: '確認用パスワードと一致しません。',
+  },
   'auth/weak-password': {
     code: '脆弱性があります',
     message: 'パスワードは最低でも6文字以上のものをご利用ください。',

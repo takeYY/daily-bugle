@@ -2,7 +2,7 @@
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/auth/signin"></ion-back-button>
-      <ion-title>アカウント作成</ion-title>
+      <ion-title>{{ title }}</ion-title>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -17,6 +17,15 @@
       <ion-item>
         <ion-label position="floating">パスワード</ion-label>
         <ion-input type="password" required [(ngModel)]="login.password" name="password"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">確認用パスワード</ion-label>
+        <ion-input
+          type="password"
+          required
+          [(ngModel)]="login.passwordConfirmation"
+          name="passwordConfirmation"
+        ></ion-input>
       </ion-item>
     </ion-list>
 

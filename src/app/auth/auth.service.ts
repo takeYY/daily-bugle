@@ -19,7 +19,12 @@ export class AuthService {
     return user.uid;
   }
 
-  authSignUp(login: { email: string; password: string }) {
+  async authSignUp(login: { email: string; password: string; passwordConfirmation: string }) {
+    if (login.password !== login.passwordConfirmation) {
+      const error = { code: 'auth/mismatch-password-confirmation' };
+      this.alertError(error);
+      throw error;
+    }
     return createUserWithEmailAndPassword(this.afAuth, login.email, login.password)
       .then(() => {
         this.navController.navigateForward('/').then(async () => {
