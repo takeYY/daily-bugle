@@ -1,0 +1,28 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>ログイン</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form #f="ngForm" class="ion-padding" (submit)="signIn()">
+    <ion-list class="ion-no-margin">
+      <ion-item>
+        <ion-label position="floating">メールアドレス</ion-label>
+        <ion-input type="email" required [(ngModel)]="login.email" name="email"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">パスワード</ion-label>
+        <ion-input type="password" required [(ngModel)]="login.password" name="password"></ion-input>
+      </ion-item>
+    </ion-list>
+
+    <div class="ion-text-center ion-padding-top">
+      <ion-button type="submit" shape="round" [disabled]="!f.form.valid || loading"> ログイン </ion-button>
+    </div>
+
+    <div class="ion-text-center ion-padding-top">
+      <ion-button size="small" fill="clear" routerLink="/auth/signup"> 新規登録はこちら </ion-button>
+    </div>
+  </form>
+</ion-content>
