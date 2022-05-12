@@ -10,6 +10,32 @@ yarn
 npm i
 ```
 
+## 環境変数
+
+`src/environments`に以下のファイルを追加
+
+- `environment.prod.ts`
+- `environment.ts`
+
+以下を記載（中身は適宜変更）  
+`environment.prod.ts`
+
+```typescript
+export const environment = {
+  production: true,
+  firebase: {
+    apiKey: 'API_KEY',
+    authDomain: 'AUTH_DOMAIN',
+    projectId: 'PROJECT_ID',
+    storageBucket: 'STORAGE_BUCKET',
+    messagingSenderId: 'MESSAGING_SENDER_ID',
+    appId: 'APP_ID',
+  },
+};
+```
+
+`environment.ts`は`production: false`にして同様に記載する
+
 ## 起動
 
 ```zsh
