@@ -13,6 +13,8 @@ import { AuthGuard } from '@angular/fire/auth-guard';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
+import { NgChartsModule } from 'ng2-charts';
+
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -23,6 +25,7 @@ import { AppRoutingModule } from './app-routing.module';
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideFirestore(() => getFirestore()),
     provideAuth(() => initializeAuth(getApp(), { persistence: indexedDBLocalPersistence })),
+    NgChartsModule,
   ],
   providers: [AuthGuard, { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],

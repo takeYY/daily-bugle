@@ -4,4 +4,24 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true"> </ion-content>
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <div><canvas #barChart3></canvas></div>
+  </ion-card>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>朝食を摂る</ion-card-title>
+      <div>
+        <canvas #barChart></canvas>
+      </div>
+      <div><canvas #barChart4></canvas></div>
+    </ion-card-header>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>掃除をする</ion-card-title>
+      <canvas #barChart2></canvas>
+    </ion-card-header>
+  </ion-card>
+</ion-content>
