@@ -15,3 +15,31 @@ npm i
 ```zsh
 npm run start
 ```
+
+## 開発
+
+1. 現在いるブランチの確認
+   ```bash
+   $ git branch
+   * main
+   dev
+   ```
+2. `main`からブランチをきる
+   ```bash
+   $ git checkout -b label/branch_name
+   ```
+3. 作業内容をコミット
+4. リモートに push
+5. PR 作成
+6. コードレビュー
+7. `main`ブランチにマージ
+8. `main`ブランチに移動
+   ```bash
+   $ git checkout main
+   ```
+9. タグとリリースノートの作成
+   ```bash
+   $ npx np --no-publish --yolo
+   ```
+10. どのバージョンアップなのか選択
+11. 完了
