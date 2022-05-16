@@ -1,6 +1,10 @@
 import { Component, ViewChild } from '@angular/core';
 import { IonReorderGroup } from '@ionic/angular';
 
+import { LoadingController } from '@ionic/angular';
+import { environment } from 'src/environments/environment';
+import { ApiService } from '../../services/api.service';
+
 @Component({
   selector: 'app-usual',
   templateUrl: './usual.page.html',
@@ -9,28 +13,43 @@ import { IonReorderGroup } from '@ionic/angular';
 export class UsualPage {
   title: string = '日常';
   scene: string = 'everyday';
-  dummy_everyday_contents = ['朝食を摂る', '掃除をする', '髪を整える', '夕飯を作る'];
-  dummy_week_contents = ['ベッドシーツを替える', '掃除機をかける'];
-  dummy_weekday_contents = ['ゴミ出し', '洗濯'];
+
+  dummy_ordinaries;
 
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
-  constructor() {}
+  constructor(public loadingController: LoadingController, public apiService: ApiService) {}
 
-  segmentChanged(event: any) {
+  async ionViewDidEnter() {
+    const loading = await this.loadingController.create({
+      message: 'Loading...',
+    });
+    if (!this.dummy_ordinaries || !this.dummy_ordinaries.length) {
+      await loading.present();
+    }
+    this.apiService.getList(`${environment.apiUrl}/api/ordinaries`).subscribe((response) => {
+      console.log(response);
+      this.dummy_ordinaries = response;
+      loading.dismiss();
+    });
+  }
+
+  segmentChanged(event: any): void {
     console.log(event);
   }
 
-  toggleReorderGroup() {
+  toggleReorderGroup(): void {
     this.reorderGroup.disabled = !this.reorderGroup.disabled;
   }
 
-  doReorder(event: any) {
+  doReorder(event: any): void {
     if (this.scene == 'everyday') {
-      this.dummy_everyday_contents = event.detail.complete(this.dummy_everyday_contents);
-    } else if (this.scene == 'week') {
-      this.dummy_week_contents = event.detail.complete(this.dummy_week_contents);
-    } else {
-      this.dummy_weekday_contents = event.detail.complete(this.dummy_weekday_contents);
+      this.dummy_ordinaries = event.detail.complete(this.dummy_ordinaries);
+      return;
     }
+    if (this.scene == 'week') {
+      this.dummy_ordinaries = event.detail.complete(this.dummy_ordinaries);
+      return;
+    }
+    this.dummy_ordinaries = event.detail.complete(this.dummy_ordinaries);
   }
 }
