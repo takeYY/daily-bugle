@@ -33,3 +33,6 @@ npm-debug.log*
 
 # env
 /src/environments
+
+# firebase
+.firebase
