@@ -11,11 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: |
-        npm install -g angular-cli
-        npm install
-        npm run build -- --prod
-        echo '/* /index.html' >> www/_redirects
+      - run: npm install -g angular-cli && npm install && npm run build -- --prod && echo '/* /index.html' >> www/_redirects
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
