@@ -27,7 +27,13 @@ export class ApiService {
     return throwError('Something bad happened; please try again later.');
   }
 
+  // TODO: API毎に処理を分ける
   getList(basePath: string): Observable<ArrayBuffer> {
     return this.http.get(basePath, this.httpOptions).pipe(retry(2), catchError(this.handleError));
+  }
+
+  // TODO: API毎に処理を分ける
+  postData(basePath: string, rowData: any) {
+    return this.http.post(basePath, rowData, this.httpOptions).pipe(retry(2), catchError(this.handleError));
   }
 }

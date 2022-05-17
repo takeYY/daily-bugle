@@ -27,6 +27,42 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  <form>
+    <ion-item>
+      <ion-label position="floating">日常名</ion-label>
+      <ion-input placeholder="歯を磨く" name="ordinaryName" [(ngModel)]="ordinaryName" required="true"></ion-input>
+    </ion-item>
+
+    <ion-grid fixed>
+      <ion-row>
+        <ion-col size="3">
+          <ion-list-header>
+            <ion-label>種類</ion-label>
+          </ion-list-header>
+          <ion-list *ngFor="let weekday of weekdays">
+            <ion-item>
+              <ion-label>{{ weekday.name }}</ion-label>
+              <ion-checkbox slot="start" [(ngModel)]="weekday.isChecked" name="weekdays"></ion-checkbox>
+            </ion-item>
+          </ion-list>
+        </ion-col>
+        <!-- TODO: 日常開始日にmodelを設定する -->
+        <ion-col size="9">
+          <ion-label>日常開始日</ion-label>
+          <ion-datetime
+            min="{{ now | date: 'yyyy-MM-dd' }}"
+            max="2030-12-31"
+            value="{{ now | date: 'yyyy-MM-dd' }}"
+          ></ion-datetime>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+
+  <ion-buttons>
+    <ion-button color="success" size="small" (click)="createOrdinary()"><ion-icon name="add"></ion-icon></ion-button>
+  </ion-buttons>
+
   <div [ngSwitch]="scene">
     <div *ngSwitchCase="'everyday'">
       <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="true">
