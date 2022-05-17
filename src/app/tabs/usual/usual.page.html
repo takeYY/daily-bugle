@@ -30,24 +30,24 @@
   <div [ngSwitch]="scene">
     <div *ngSwitchCase="'everyday'">
       <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="true">
-        <ion-item *ngFor="let c of dummy_everyday_contents">
-          <ion-label> {{ c }} </ion-label>
+        <ion-item *ngFor="let ordinary of dummy_ordinaries">
+          <ion-label> {{ ordinary.name }} </ion-label>
           <ion-reorder slot="end"></ion-reorder>
         </ion-item>
       </ion-reorder-group>
     </div>
     <div *ngSwitchCase="'week'">
       <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="true">
-        <ion-item *ngFor="let c of dummy_week_contents">
-          <ion-label> {{ c }} </ion-label>
+        <ion-item *ngFor="let ordinary of dummy_ordinaries">
+          <ion-label> {{ ordinary.name }} </ion-label>
           <ion-reorder slot="end"></ion-reorder>
         </ion-item>
       </ion-reorder-group>
     </div>
     <div *ngSwitchCase="'weekday'">
       <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="true">
-        <ion-item *ngFor="let c of dummy_weekday_contents">
-          <ion-label> {{ c }} </ion-label>
+        <ion-item *ngFor="let ordinary of dummy_ordinaries">
+          <ion-label> {{ ordinary.name }} </ion-label>
           <ion-reorder slot="end"></ion-reorder>
         </ion-item>
       </ion-reorder-group>
