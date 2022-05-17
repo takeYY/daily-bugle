@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: yarn global add @angular/cli && yarn && npm run build -- --configuration=production && echo '/* /index.html' >> www/_redirects
+      - run: yarn global add @angular/cli && yarn && mkdir ./src/environments && mv ./env/*.ts ./src/environments && npm run build -- --configuration=production && echo '/* /index.html' >> www/_redirects
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
