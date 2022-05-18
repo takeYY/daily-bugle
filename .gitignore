@@ -31,8 +31,5 @@ npm-debug.log*
 /plugins
 /www
 
-# env
-/src/environments
-
 # firebase
 .firebase
