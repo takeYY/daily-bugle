@@ -67,7 +67,7 @@
   <div [ngSwitch]="scene">
     <div *ngSwitchCase="'everyday'">
       <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="true">
-        <ion-item *ngFor="let ordinary of dummy_ordinaries">
+        <ion-item *ngFor="let ordinary of ordinaries">
           <ion-label> {{ ordinary.name }} </ion-label>
           <ion-reorder slot="end"></ion-reorder>
         </ion-item>
@@ -75,7 +75,7 @@
     </div>
     <div *ngSwitchCase="'week'">
       <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="true">
-        <ion-item *ngFor="let ordinary of dummy_ordinaries">
+        <ion-item *ngFor="let ordinary of ordinaries">
           <ion-label> {{ ordinary.name }} </ion-label>
           <ion-reorder slot="end"></ion-reorder>
         </ion-item>
@@ -83,7 +83,7 @@
     </div>
     <div *ngSwitchCase="'weekday'">
       <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="true">
-        <ion-item *ngFor="let ordinary of dummy_ordinaries">
+        <ion-item *ngFor="let ordinary of ordinaries">
           <ion-label> {{ ordinary.name }} </ion-label>
           <ion-reorder slot="end"></ion-reorder>
         </ion-item>

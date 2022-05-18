@@ -35,7 +35,8 @@ export class UsualPage {
   now = new Date();
 
   weekdays;
-  dummy_ordinaries;
+  usersOrdinaries;
+  ordinaries;
 
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
   constructor(
@@ -61,13 +62,14 @@ export class UsualPage {
     const loading = await this.loadingController.create({
       message: 'Loading...',
     });
-    if (!this.dummy_ordinaries || !this.dummy_ordinaries.length) {
+    if (!this.ordinaries || !this.ordinaries.length) {
       await loading.present();
     }
     console.log(this.ordinaryService.basePath);
     console.log(this.weekdayService.basePath);
+    // 日常を表示
     this.ordinaryService.getList().subscribe((response) => {
-      this.dummy_ordinaries = response;
+      this.ordinaries = response;
       loading.dismiss();
     });
     this.uid = await this.auth.getUserId();
@@ -88,14 +90,14 @@ export class UsualPage {
 
   doReorder(event: any): void {
     if (this.scene == 'everyday') {
-      this.dummy_ordinaries = event.detail.complete(this.dummy_ordinaries);
+      this.ordinaries = event.detail.complete(this.ordinaries);
       return;
     }
     if (this.scene == 'week') {
-      this.dummy_ordinaries = event.detail.complete(this.dummy_ordinaries);
+      this.ordinaries = event.detail.complete(this.ordinaries);
       return;
     }
-    this.dummy_ordinaries = event.detail.complete(this.dummy_ordinaries);
+    this.ordinaries = event.detail.complete(this.ordinaries);
   }
 
   async createOrdinary(): Promise<void> {
@@ -114,8 +116,8 @@ export class UsualPage {
     }
     // 日常の登録
     this.ordinaryService.postData(this.ordinary).subscribe((response: ArrayBuffer) => {
-      // 日常のダミーデータ更新
-      this.dummy_ordinaries.push({
+      // 日常のデータ更新
+      this.ordinaries.push({
         id: response['id'],
         name: response['name'],
       });
