@@ -1,18 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { retry, catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ApiService {
-  constructor(private http: HttpClient) {}
-  private httpOptions: any = {
-    headers: new HttpHeaders({
-      'Content-Type': 'application/json',
-    }),
-  };
+export class ErrorService {
+  constructor() {}
 
   handleError(error: HttpErrorResponse): Observable<never> {
     if (error.error instanceof ErrorEvent) {
@@ -25,15 +19,5 @@ export class ApiService {
     }
     // return an observable with a user-facing error message
     return throwError('Something bad happened; please try again later.');
-  }
-
-  // TODO: API毎に処理を分ける
-  getList(basePath: string): Observable<ArrayBuffer> {
-    return this.http.get(basePath, this.httpOptions).pipe(retry(2), catchError(this.handleError));
-  }
-
-  // TODO: API毎に処理を分ける
-  postData(basePath: string, rowData: any) {
-    return this.http.post(basePath, rowData, this.httpOptions).pipe(retry(2), catchError(this.handleError));
   }
 }

@@ -1,5 +1,5 @@
 export const environment = {
-  production: false,
+  production: true,
   firebase: {
     apiKey: 'AIzaSyCDzAfvwTkPMm1lDgtgxRSahclDO53go7U',
     authDomain: 'daily-bugle-2de82.firebaseapp.com',
@@ -8,4 +8,5 @@ export const environment = {
     messagingSenderId: '660937532508',
     appId: '1:660937532508:web:4a3a6e589f2c5b383bf299',
   },
+  apiUrl: 'https://asia-northeast1-daily-bugle-2de82.cloudfunctions.net',
 };
