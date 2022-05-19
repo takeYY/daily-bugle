@@ -13,10 +13,11 @@ import { IUsersOrdinary } from '../interfaces/users-ordinary/IUsersOrdinary';
 @Injectable({
   providedIn: 'root',
 })
+// TODO インターセプターを導入
 export class ConnectService {
   basePath: string = environment.apiUrl;
-  constructor(private http: HttpClient, private errorService: ErrorService) {}
-  private httpOptions: any = {
+  constructor(public http: HttpClient, public errorService: ErrorService) {}
+  httpOptions: any = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
     }),
