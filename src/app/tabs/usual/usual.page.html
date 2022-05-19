@@ -67,26 +67,38 @@
   <div [ngSwitch]="scene">
     <div *ngSwitchCase="'everyday'">
       <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="true">
-        <ion-item *ngFor="let ordinary of ordinaries">
-          <ion-label> {{ ordinary.name }} </ion-label>
-          <ion-reorder slot="end"></ion-reorder>
-        </ion-item>
+        <ng-container *ngFor="let ow of ordinariesWeekday">
+          <ng-container *ngIf="ow.scene === 'everyday'">
+            <ion-item>
+              <ion-label> {{ ow.ordinary.name }} </ion-label>
+              <ion-reorder slot="end"></ion-reorder>
+            </ion-item>
+          </ng-container>
+        </ng-container>
       </ion-reorder-group>
     </div>
     <div *ngSwitchCase="'week'">
       <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="true">
-        <ion-item *ngFor="let ordinary of ordinaries">
-          <ion-label> {{ ordinary.name }} </ion-label>
-          <ion-reorder slot="end"></ion-reorder>
-        </ion-item>
+        <ng-container *ngFor="let ow of ordinariesWeekday">
+          <ng-container *ngIf="ow.scene === 'week'">
+            <ion-item>
+              <ion-label> {{ ow.ordinary.name }} </ion-label>
+              <ion-reorder slot="end"></ion-reorder>
+            </ion-item>
+          </ng-container>
+        </ng-container>
       </ion-reorder-group>
     </div>
     <div *ngSwitchCase="'weekday'">
       <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="true">
-        <ion-item *ngFor="let ordinary of ordinaries">
-          <ion-label> {{ ordinary.name }} </ion-label>
-          <ion-reorder slot="end"></ion-reorder>
-        </ion-item>
+        <ng-container *ngFor="let ow of ordinariesWeekday">
+          <ng-container *ngIf="ow.scene === 'weekday'">
+            <ion-item>
+              <ion-label> {{ ow.ordinary.name }} </ion-label>
+              <ion-reorder slot="end"></ion-reorder>
+            </ion-item>
+          </ng-container>
+        </ng-container>
       </ion-reorder-group>
     </div>
   </div>
