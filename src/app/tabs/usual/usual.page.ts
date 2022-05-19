@@ -7,11 +7,11 @@ import { FirestoreService, IUser } from '../../shared/firestore.service';
 
 import { IOrdinary } from '../../interfaces/ordinary/IOrdinary';
 import { IUsersOrdinary } from '../../interfaces/users-ordinary/IUsersOrdinary';
+import { IWeekday } from '../../interfaces/weekday/IWeekday';
 
 import { OrdinariesService } from '../../api/ordinary/ordinaries.service';
 import { UsrsOrdinariesService } from '../../api/users-ordinary/usrs-ordinaries.service';
 import { WeekdaysService } from '../../api/weekday/weekdays.service';
-import { IWeekday } from 'src/app/interfaces/weekday/IWeekday';
 
 @Component({
   selector: 'app-usual',
@@ -24,11 +24,12 @@ export class UsualPage {
   ordinary: IOrdinary = { name: null }; //日常
   usersOrdinary: IUsersOrdinary = {
     userId: null,
-    ordinaryId: null,
-    weekdayId: null,
+    ordinary: null,
+    weekdays: [],
     startedOn: null,
     createdAt: null,
     updatedAt: null,
+    isClosed: false,
   }; //ユーザごとの日常
   title: string = '日常';
   scene: string = 'everyday';
@@ -36,7 +37,7 @@ export class UsualPage {
 
   weekdays;
   usersOrdinaries;
-  ordinaries;
+  ordinariesWeekday: { ordinary: IOrdinary; weekdays: IWeekday[]; scene: string }[];
 
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
   constructor(
@@ -53,31 +54,40 @@ export class UsualPage {
     if (!user) {
       console.error('userがいません！');
     }
-    /* this.apiService.getList(`${environment.apiUrl}/api/users`).subscribe((response) => {
-      users = response;
-    }); */
   }
 
   async ionViewDidEnter(): Promise<void> {
     const loading = await this.loadingController.create({
       message: 'Loading...',
     });
-    if (!this.ordinaries || !this.ordinaries.length) {
+    if (!this.ordinariesWeekday || !this.ordinariesWeekday.length) {
       await loading.present();
     }
-    console.log(this.ordinaryService.basePath);
-    console.log(this.weekdayService.basePath);
-    // 日常を表示
-    this.ordinaryService.getList().subscribe((response) => {
-      this.ordinaries = response;
-      loading.dismiss();
-    });
     this.uid = await this.auth.getUserId();
+    this.usersOrdinary.userId = this.uid;
     this.user = await this.firestore.userInit(this.uid);
+    // weekdaysの取得
     this.weekdayService.getList().subscribe((response) => {
       this.weekdays = response;
     });
-    this.usersOrdinary.userId = this.uid;
+
+    // ログイン中のユーザが持つ日常の取得
+    this.usersOrdinaryService.findAllByUid(this.uid).subscribe((response) => {
+      this.usersOrdinaries = response;
+      loading.dismiss();
+      if (!this.usersOrdinaries) {
+        this.ordinariesWeekday = [];
+        return;
+      }
+      this.ordinariesWeekday = this.usersOrdinaries.map((uo) => {
+        const weekdayLength = uo.weekdays.length;
+        return {
+          ordinary: uo.ordinary[0],
+          weekdays: uo.weekdays,
+          scene: weekdayLength === 7 ? 'everyday' : weekdayLength === 1 ? 'week' : 'weekday',
+        };
+      });
+    });
   }
 
   segmentChanged(event: any): void {
@@ -89,15 +99,45 @@ export class UsualPage {
   }
 
   doReorder(event: any): void {
-    if (this.scene == 'everyday') {
-      this.ordinaries = event.detail.complete(this.ordinaries);
+    if (this.scene === 'everyday') {
+      //this.ordinariesWeekday.ordinary = event.detail.complete(this.ordinaries);
+      this.ordinariesWeekday
+        .filter((ow) => {
+          return ow.scene === this.scene;
+        })
+        .map((ow) => {
+          return {
+            ...ow,
+            ordinary: event.detail.complete(ow.ordinary),
+          };
+        });
       return;
     }
-    if (this.scene == 'week') {
-      this.ordinaries = event.detail.complete(this.ordinaries);
+    if (this.scene === 'week') {
+      //this.ordinaries = event.detail.complete(this.ordinaries);
+      this.ordinariesWeekday
+        .filter((ow) => {
+          return ow.scene === this.scene;
+        })
+        .map((ow) => {
+          return {
+            ...ow,
+            ordinary: event.detail.complete(ow.ordinary),
+          };
+        });
       return;
     }
-    this.ordinaries = event.detail.complete(this.ordinaries);
+    this.ordinariesWeekday
+      .filter((ow) => {
+        return ow.scene === 'weekday';
+      })
+      .map((ow) => {
+        return {
+          ...ow,
+          ordinary: event.detail.complete(ow.ordinary),
+        };
+      });
+    return;
   }
 
   async createOrdinary(): Promise<void> {
@@ -110,32 +150,39 @@ export class UsualPage {
       alert('日常名がありません！');
       return;
     }
-    if (!this.weekdays) {
+    if (
+      !this.weekdays.filter((w) => {
+        return w.isChecked;
+      })
+    ) {
       alert('曜日が選択されていません！');
-      //return;
+      return;
     }
     // 日常の登録
-    this.ordinaryService.postData(this.ordinary).subscribe((response: ArrayBuffer) => {
-      // 日常のデータ更新
-      this.ordinaries.push({
-        id: response['id'],
-        name: response['name'],
-      });
+    this.ordinaryService.postData(this.ordinary).subscribe((response) => {
+      // 日常のデータを一時保存
+      const tmpOrdinary = { id: response['id'], name: response['name'] };
       // 日常の入力項目初期化
       this.ordinary.name = '';
-      // 登録する曜日毎にusers-ordinaries登録
-      this.weekdays.forEach((weekday) => {
-        if (!weekday.isChecked) {
-          return;
-        }
-
-        // 曜日毎に日常を登録する雛形作成
-        this.usersOrdinary.ordinaryId = response['id'];
-        this.usersOrdinary.weekdayId = weekday.id;
-        this.usersOrdinary.createdAt = new Date();
-        // ユーザ毎の日常登録
-        this.usersOrdinaryService.postData(this.usersOrdinary).subscribe((res) => {
-          console.info(res);
+      // 登録する曜日毎にweekdaysを保存し、まとめてusersOrdinaryに追加
+      const tmpWeekday: [] = this.weekdays.filter((w) => {
+        return w.isChecked;
+      });
+      const tmpWeekdayLength: number = this.weekdays.filter((w) => {
+        return w.isChecked;
+      }).length;
+      // 雛形作成
+      this.usersOrdinary.isClosed = false;
+      this.usersOrdinary.ordinary = tmpOrdinary;
+      this.usersOrdinary.weekdays = tmpWeekday;
+      this.usersOrdinaryService.postData(this.usersOrdinary).subscribe((res) => {
+        this.ordinariesWeekday.push({
+          ordinary: tmpOrdinary,
+          weekdays: tmpWeekday,
+          scene: tmpWeekdayLength === 7 ? 'everyday' : tmpWeekdayLength === 1 ? 'week' : 'weekday',
+        });
+        this.weekdays.map((w) => {
+          w.isChecked = false;
         });
       });
     });
