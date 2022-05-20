@@ -5,32 +5,30 @@
         <ion-icon name="settings-sharp"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>{{ title }}</ion-title>
+
     <ion-buttons slot="end">
       <ion-button (click)="onCreateOrdinaryModal($event)" icon-only="true" size="small">
         <ion-icon name="create-sharp"></ion-icon>
       </ion-button>
     </ion-buttons>
+
+    <ion-title>{{ title }}</ion-title>
   </ion-toolbar>
+
+  <ion-segment [(ngModel)]="scene" (ionChange)="segmentChanged($event)">
+    <ion-segment-button value="everyday" checked>
+      <ion-label>毎日</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="week">
+      <ion-label>週一</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="weekday">
+      <ion-label>曜日</ion-label>
+    </ion-segment-button>
+  </ion-segment>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-toolbar>
-    <ion-toolbar>
-      <ion-segment [(ngModel)]="scene" (ionChange)="segmentChanged($event)">
-        <ion-segment-button value="everyday" checked>
-          <ion-label>毎日</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="week">
-          <ion-label>週一</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="weekday">
-          <ion-label>曜日</ion-label>
-        </ion-segment-button>
-      </ion-segment>
-    </ion-toolbar>
-  </ion-toolbar>
-
   <div [ngSwitch]="scene">
     <div *ngSwitchCase="'everyday'">
       <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="true">
