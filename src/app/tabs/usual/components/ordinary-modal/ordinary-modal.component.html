@@ -1,0 +1,51 @@
+<ion-header translucent>
+  <ion-toolbar>
+    <ion-title>日常登録</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="onModalDismiss()" color="primary">閉じる</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form>
+    <ion-item>
+      <ion-label position="floating">日常名</ion-label>
+      <ion-input placeholder="歯を磨く" name="ordinary_name" [(ngModel)]="ordinary.name" required="true"></ion-input>
+    </ion-item>
+
+    <ion-grid fixed>
+      <ion-list-header>
+        <h3>実施する曜日</h3>
+      </ion-list-header>
+      <ion-list>
+        <ion-item *ngFor="let weekday of weekdays">
+          <ion-label>{{ weekday.name }}</ion-label>
+          <ion-checkbox slot="start" [(ngModel)]="weekday.isChecked" name="weekdays"></ion-checkbox>
+        </ion-item>
+      </ion-list>
+      <h3>日常開始日</h3>
+      <ion-datetime
+        size="cover"
+        presentation="date"
+        [(ngModel)]="usersOrdinary.startedOn"
+        displayFormat="yyyy-MM-dd"
+        pickerFormat="yyyy-MM-dd"
+        min="{{ now }}"
+        name="startedOn"
+      ></ion-datetime>
+    </ion-grid>
+  </form>
+
+  <ion-button expand="block" (click)="onCreateOrdinary()">
+    <ion-icon slot="start" name="add"></ion-icon>
+    日常登録
+  </ion-button>
+  <hr />
+
+  <ion-button expand="block" color="danger" (click)="onModalDismiss()">
+    <ion-icon slot="start" size="small" name="arrow-undo"></ion-icon>
+    キャンセル
+  </ion-button>
+  <hr />
+</ion-content>
