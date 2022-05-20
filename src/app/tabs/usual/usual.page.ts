@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { IonReorderGroup } from '@ionic/angular';
+import { IonReorderGroup, ModalController } from '@ionic/angular';
 
 import { LoadingController } from '@ionic/angular';
 import { AuthService } from '../../auth/auth.service';
@@ -9,9 +9,9 @@ import { IOrdinary } from '../../interfaces/ordinary/IOrdinary';
 import { IUsersOrdinary } from '../../interfaces/users-ordinary/IUsersOrdinary';
 import { IWeekday } from '../../interfaces/weekday/IWeekday';
 
-import { OrdinariesService } from '../../api/ordinary/ordinaries.service';
 import { UsrsOrdinariesService } from '../../api/users-ordinary/usrs-ordinaries.service';
 import { WeekdaysService } from '../../api/weekday/weekdays.service';
+import { OrdinaryModalComponent } from './components/ordinary-modal/ordinary-modal.component';
 
 @Component({
   selector: 'app-usual',
@@ -33,7 +33,6 @@ export class UsualPage {
   }; //ユーザごとの日常
   title: string = '日常';
   scene: string = 'everyday';
-  now = new Date();
 
   weekdays;
   usersOrdinaries;
@@ -42,9 +41,9 @@ export class UsualPage {
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
   constructor(
     private loadingController: LoadingController,
+    private modalController: ModalController,
     private auth: AuthService,
     private firestore: FirestoreService,
-    private ordinaryService: OrdinariesService,
     private weekdayService: WeekdaysService,
     private usersOrdinaryService: UsrsOrdinariesService,
   ) {}
@@ -140,51 +139,32 @@ export class UsualPage {
     return;
   }
 
-  async createOrdinary(): Promise<void> {
-    if (!this.user) {
-      alert('ログインが必要です！');
-      return;
-    }
+  async editOrdinary(): Promise<void> {
+    // TODO: 記載する
+    console.log('@@@@編集ボタン押下！！');
+  }
 
-    if (!this.ordinary.name) {
-      alert('日常名がありません！');
-      return;
-    }
-    if (
-      !this.weekdays.filter((w) => {
-        return w.isChecked;
-      })
-    ) {
-      alert('曜日が選択されていません！');
-      return;
-    }
-    // 日常の登録
-    this.ordinaryService.postData(this.ordinary).subscribe((response) => {
-      // 日常のデータを一時保存
-      const tmpOrdinary = { id: response['id'], name: response['name'] };
-      // 日常の入力項目初期化
-      this.ordinary.name = '';
-      // 登録する曜日毎にweekdaysを保存し、まとめてusersOrdinaryに追加
-      const tmpWeekday: [] = this.weekdays.filter((w) => {
-        return w.isChecked;
-      });
-      const tmpWeekdayLength: number = this.weekdays.filter((w) => {
-        return w.isChecked;
-      }).length;
-      // 雛形作成
-      this.usersOrdinary.isClosed = false;
-      this.usersOrdinary.ordinary = tmpOrdinary;
-      this.usersOrdinary.weekdays = tmpWeekday;
-      this.usersOrdinaryService.postData(this.usersOrdinary).subscribe((res) => {
-        this.ordinariesWeekday.push({
-          ordinary: tmpOrdinary,
-          weekdays: tmpWeekday,
-          scene: tmpWeekdayLength === 7 ? 'everyday' : tmpWeekdayLength === 1 ? 'week' : 'weekday',
-        });
-        this.weekdays.map((w) => {
-          w.isChecked = false;
-        });
-      });
+  async onCreateOrdinaryModal($event) {
+    $event.stopPropagation();
+    $event.preventDefault();
+
+    this.usersOrdinary.startedOn = new Date();
+
+    const modal = await this.modalController.create({
+      component: OrdinaryModalComponent,
+      swipeToClose: true,
+      canDismiss: true,
+      presentingElement: await this.modalController.getTop(),
+      componentProps: {
+        user: this.user,
+        ordinary: this.ordinary,
+        now: new Date(),
+        weekdays: this.weekdays,
+        usersOrdinary: this.usersOrdinary,
+        ordinariesWeekday: this.ordinariesWeekday,
+      },
     });
+
+    return await modal.present();
   }
 }

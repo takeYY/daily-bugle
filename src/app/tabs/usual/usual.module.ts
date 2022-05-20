@@ -8,8 +8,10 @@ import { UsualPageRoutingModule } from './usual-routing.module';
 
 import { UsualPage } from './usual.page';
 
+import { ComponentsModule } from './components/components.module';
+
 @NgModule({
-  imports: [CommonModule, FormsModule, IonicModule, UsualPageRoutingModule],
+  imports: [CommonModule, FormsModule, IonicModule, UsualPageRoutingModule, ComponentsModule],
   declarations: [UsualPage],
 })
 export class UsualPageModule {}
