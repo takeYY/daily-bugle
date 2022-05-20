@@ -4,21 +4,22 @@
 
 ## 環境構築
 
-```bash
-yarn
-# or
-npm i
-```
+- パッケージインストール
+  ```bash
+  yarn
+  # or
+  npm i
+  ```
+- husky インストールと設定
+  ```bash
+  npx husky install
+  npx husky add .husky/pre-commit "npx lint-staged"
+  ```
 
 ## 環境変数
 
-`src/environments`に以下のファイルを追加
-
-- `environment.prod.ts`
-- `environment.ts`
-
 以下を記載（中身は適宜変更）  
-`environment.prod.ts`
+`src/environments/environment.prod.ts`
 
 ```typescript
 export const environment = {
@@ -31,10 +32,11 @@ export const environment = {
     messagingSenderId: 'MESSAGING_SENDER_ID',
     appId: 'APP_ID',
   },
+  apiUrl: 'API_URL',
 };
 ```
 
-`environment.ts`は`production: false`にして同様に記載する
+`src/environments/environment.ts`は`production: false`にして同様に記載する
 
 ## 起動
 
