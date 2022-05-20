@@ -2,7 +2,7 @@
   "name": "daily-bugle",
   "version": "1.0.1",
   "author": "takeYY",
-  "homepage": "https://ionicframework.com/",
+  "homepage": "daily-bugle-2de82.web.app",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
