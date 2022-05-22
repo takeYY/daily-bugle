@@ -2,15 +2,18 @@ import { Component, ViewChild } from '@angular/core';
 import { IonReorderGroup, ModalController } from '@ionic/angular';
 
 import { LoadingController } from '@ionic/angular';
+import { format } from 'date-fns';
 import { AuthService } from '../../auth/auth.service';
 import { FirestoreService, IUser } from '../../shared/firestore.service';
 
 import { IOrdinary } from '../../interfaces/ordinary/IOrdinary';
 import { IUsersOrdinary } from '../../interfaces/users-ordinary/IUsersOrdinary';
 import { IWeekday } from '../../interfaces/weekday/IWeekday';
+import { IAchievement } from 'src/app/interfaces/achievement/IAchievement';
 
-import { UsrsOrdinariesService } from '../../api/users-ordinary/usrs-ordinaries.service';
+import { UsersOrdinariesService } from '../../api/users-ordinary/users-ordinaries.service';
 import { WeekdaysService } from '../../api/weekday/weekdays.service';
+import { AchievementsService } from 'src/app/api/achievement/achievements.service';
 import { OrdinaryModalComponent } from './components/ordinary-modal/ordinary-modal.component';
 
 @Component({
@@ -24,8 +27,15 @@ export class UsualPage {
   title = '日常';
   scene = 'everyday';
   weekdays;
-  usersOrdinaries;
-  ordinariesWeekday: { ordinary: IOrdinary; weekdays: IWeekday[]; scene: string }[];
+  usersOrdinaries; //constで宣言可能
+  achievements: {
+    userId: string;
+    scene: string;
+    isAchieved: boolean;
+    comment: string;
+    //usersOrdinaries: IUsersOrdinary[];
+    usersOrdinaries: any;
+  }[];
 
   private uid: string; //userID
   private user: IUser; // User
@@ -46,21 +56,15 @@ export class UsualPage {
     private auth: AuthService,
     private firestore: FirestoreService,
     private weekdayService: WeekdaysService,
-    private usersOrdinaryService: UsrsOrdinariesService,
+    private usersOrdinaryService: UsersOrdinariesService,
+    private achievementService: AchievementsService,
   ) {}
-
-  /* async ngOnInit(): Promise<void> {
-    const user = await this.firestore.userInit(await this.auth.getUserId());
-    if (!user) {
-      console.error('userがいません！');
-    }
-  } */
 
   async ionViewDidEnter(): Promise<void> {
     const loading = await this.loadingController.create({
       message: 'Loading...',
     });
-    if (!this.ordinariesWeekday || !this.ordinariesWeekday.length) {
+    if (!this.achievements || !this.achievements.length) {
       await loading.present();
     }
     this.uid = await this.auth.getUserId();
@@ -75,18 +79,60 @@ export class UsualPage {
     this.usersOrdinaryService.findAllByUid(this.uid).subscribe((response) => {
       this.usersOrdinaries = response;
       loading.dismiss();
+      this.achievements = [];
       if (!this.usersOrdinaries) {
-        this.ordinariesWeekday = [];
+        this.achievements = [];
         return;
       }
-      this.ordinariesWeekday = this.usersOrdinaries.map((uo) => {
+      // 今日分のachievementsを取得
+      /* const now = format(new Date(), 'YYYY-MM-DD');
+      console.log('@now', now);
+      this.achievementService.findAllByDate(this.uid, now).subscribe((res) => {
+        const hasAchievement: any = res;
+        const tmpAchievements = [];
+        console.log('@hasAchievement', hasAchievement);
+        // 今日分のachievementsがなかったら新たに生成
+        if (!hasAchievement.length) {
+          this.usersOrdinaries.map((uo) => {
+            this.achievementService
+              .postData({
+                userId: this.uid,
+                usersOrdinaries: {
+                  ...uo,
+                  ordinary: uo.ordinary[0],
+                },
+                isAchieved: false,
+                createdAt: '',
+                comment: '',
+              })
+              .subscribe((r) => {
+                const weekdayLength = uo.weekdays.length;
+                tmpAchievements.push({
+                  ...r,
+                  scene: weekdayLength === 7 ? 'everyday' : weekdayLength === 1 ? 'week' : 'weekday',
+                });
+              });
+          });
+          this.achievements = tmpAchievements;
+        }
+      }); */
+      //if (!this.achievements.length) {
+      this.achievements = this.usersOrdinaries.map((uo) => {
         const weekdayLength = uo.weekdays.length;
         return {
-          ordinary: uo.ordinary[0],
-          weekdays: uo.weekdays,
+          userId: this.uid,
+          usersOrdinaries: {
+            ...uo,
+            ordinary: uo.ordinary[0],
+          },
           scene: weekdayLength === 7 ? 'everyday' : weekdayLength === 1 ? 'week' : 'weekday',
+          comment: '',
+          isAchieved: false,
         };
       });
+      //}
+      console.log('@usersOrdinaries', this.usersOrdinaries);
+      console.log('@achievements', this.achievements);
     });
   }
 
@@ -101,21 +147,21 @@ export class UsualPage {
   doReorder(event: any): void {
     if (this.scene === 'everyday') {
       //this.ordinariesWeekday.ordinary = event.detail.complete(this.ordinaries);
-      this.ordinariesWeekday
+      this.achievements
         .filter((ow) => ow.scene === this.scene)
-        .map((ow) => ({ ...ow, ordinary: event.detail.complete(ow.ordinary) }));
+        .map((ow) => ({ ...ow, ordinary: event.detail.complete(ow.usersOrdinaries.ordinary) }));
       return;
     }
     if (this.scene === 'week') {
       //this.ordinaries = event.detail.complete(this.ordinaries);
-      this.ordinariesWeekday
+      this.achievements
         .filter((ow) => ow.scene === this.scene)
-        .map((ow) => ({ ...ow, ordinary: event.detail.complete(ow.ordinary) }));
+        .map((ow) => ({ ...ow, ordinary: event.detail.complete(ow.usersOrdinaries.ordinary) }));
       return;
     }
-    this.ordinariesWeekday
+    this.achievements
       .filter((ow) => ow.scene === 'weekday')
-      .map((ow) => ({ ...ow, ordinary: event.detail.complete(ow.ordinary) }));
+      .map((ow) => ({ ...ow, ordinary: event.detail.complete(ow.usersOrdinaries.ordinary) }));
     return;
   }
 
@@ -141,10 +187,24 @@ export class UsualPage {
         now: new Date(),
         weekdays: this.weekdays,
         usersOrdinary: this.usersOrdinary,
-        ordinariesWeekday: this.ordinariesWeekday,
+        //ordinariesWeekday: this.ordinariesWeekday,
+        ordinariesWeekday: this.achievements,
       },
     });
 
     return await modal.present();
+  }
+
+  async onAchievedOrdinary($event, achievement: any) {
+    $event.preventDefault();
+    $event.stopPropagation();
+
+    const changedAchievement: IAchievement = {
+      ...achievement,
+      isAchieved: !achievement.isAchieved,
+    };
+    this.achievementService.postData(changedAchievement).subscribe((response) => {
+      console.log('@add', response);
+    });
   }
 }
