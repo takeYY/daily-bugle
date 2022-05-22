@@ -32,10 +32,17 @@
   <div [ngSwitch]="scene">
     <div *ngSwitchCase="'everyday'">
       <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="true">
-        <ng-container *ngFor="let ow of ordinariesWeekday">
-          <ng-container *ngIf="ow.scene === 'everyday'">
+        <ng-container *ngFor="let achievement of achievements">
+          <ng-container *ngIf="achievement.scene === 'everyday'">
             <ion-item>
-              <ion-label> {{ ow.ordinary.name }} </ion-label>
+              <ion-checkbox
+                slot="start"
+                color="primary"
+                checked="{{ achievement.isAchieved }}"
+                [(ngModel)]="achievement.isAchieved"
+                (click)="onAchievedOrdinary($event, achievement)"
+              ></ion-checkbox>
+              <ion-label> {{ achievement.usersOrdinaries.ordinary.name }} </ion-label>
               <ion-reorder slot="end"></ion-reorder>
             </ion-item>
           </ng-container>
@@ -44,10 +51,18 @@
     </div>
     <div *ngSwitchCase="'week'">
       <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="true">
-        <ng-container *ngFor="let ow of ordinariesWeekday">
-          <ng-container *ngIf="ow.scene === 'week'">
+        <ng-container *ngFor="let achievement of achievements">
+          <ng-container *ngIf="achievement.scene === 'week'">
             <ion-item>
-              <ion-label> {{ ow.ordinary.name }} </ion-label>
+              <ion-checkbox
+                slot="start"
+                color="primary"
+                checked="{{ achievement.isAchieved }}"
+                disabled="{{ !achievement.isAchieved && !achievement.usersOrdinaries }}"
+                [(ngModel)]="achievement.isAchieved"
+                (click)="onAchievedOrdinary($event, achievement)"
+              ></ion-checkbox>
+              <ion-label> {{ achievement.usersOrdinaries.ordinary.name }} </ion-label>
               <ion-reorder slot="end"></ion-reorder>
             </ion-item>
           </ng-container>
@@ -56,10 +71,18 @@
     </div>
     <div *ngSwitchCase="'weekday'">
       <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="true">
-        <ng-container *ngFor="let ow of ordinariesWeekday">
-          <ng-container *ngIf="ow.scene === 'weekday'">
+        <ng-container *ngFor="let achievement of achievements">
+          <ng-container *ngIf="achievement.scene === 'weekday'">
             <ion-item>
-              <ion-label> {{ ow.ordinary.name }} </ion-label>
+              <ion-checkbox
+                slot="start"
+                color="primary"
+                checked="{{ achievement.isAchieved }}"
+                disabled="{{ !achievement.isAchieved && !achievement.usersOrdinaries }}"
+                [(ngModel)]="achievement.isAchieved"
+                (click)="onAchievedOrdinary($event, achievement)"
+              ></ion-checkbox>
+              <ion-label> {{ achievement.usersOrdinaries.ordinary.name }} </ion-label>
               <ion-reorder slot="end"></ion-reorder>
             </ion-item>
           </ng-container>
