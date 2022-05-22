@@ -19,10 +19,18 @@ import { OrdinaryModalComponent } from './components/ordinary-modal/ordinary-mod
   styleUrls: ['./usual.page.scss'],
 })
 export class UsualPage {
+  @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
+
+  title = '日常';
+  scene = 'everyday';
+  weekdays;
+  usersOrdinaries;
+  ordinariesWeekday: { ordinary: IOrdinary; weekdays: IWeekday[]; scene: string }[];
+
   private uid: string; //userID
   private user: IUser; // User
-  ordinary: IOrdinary = { name: null }; //日常
-  usersOrdinary: IUsersOrdinary = {
+  private ordinary: IOrdinary = { name: null }; //日常
+  private usersOrdinary: IUsersOrdinary = {
     userId: null,
     ordinary: null,
     weekdays: [],
@@ -31,14 +39,7 @@ export class UsualPage {
     updatedAt: null,
     isClosed: false,
   }; //ユーザごとの日常
-  title: string = '日常';
-  scene: string = 'everyday';
 
-  weekdays;
-  usersOrdinaries;
-  ordinariesWeekday: { ordinary: IOrdinary; weekdays: IWeekday[]; scene: string }[];
-
-  @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
   constructor(
     private loadingController: LoadingController,
     private modalController: ModalController,
@@ -48,12 +49,12 @@ export class UsualPage {
     private usersOrdinaryService: UsrsOrdinariesService,
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  /* async ngOnInit(): Promise<void> {
     const user = await this.firestore.userInit(await this.auth.getUserId());
     if (!user) {
       console.error('userがいません！');
     }
-  }
+  } */
 
   async ionViewDidEnter(): Promise<void> {
     const loading = await this.loadingController.create({
@@ -101,41 +102,20 @@ export class UsualPage {
     if (this.scene === 'everyday') {
       //this.ordinariesWeekday.ordinary = event.detail.complete(this.ordinaries);
       this.ordinariesWeekday
-        .filter((ow) => {
-          return ow.scene === this.scene;
-        })
-        .map((ow) => {
-          return {
-            ...ow,
-            ordinary: event.detail.complete(ow.ordinary),
-          };
-        });
+        .filter((ow) => ow.scene === this.scene)
+        .map((ow) => ({ ...ow, ordinary: event.detail.complete(ow.ordinary) }));
       return;
     }
     if (this.scene === 'week') {
       //this.ordinaries = event.detail.complete(this.ordinaries);
       this.ordinariesWeekday
-        .filter((ow) => {
-          return ow.scene === this.scene;
-        })
-        .map((ow) => {
-          return {
-            ...ow,
-            ordinary: event.detail.complete(ow.ordinary),
-          };
-        });
+        .filter((ow) => ow.scene === this.scene)
+        .map((ow) => ({ ...ow, ordinary: event.detail.complete(ow.ordinary) }));
       return;
     }
     this.ordinariesWeekday
-      .filter((ow) => {
-        return ow.scene === 'weekday';
-      })
-      .map((ow) => {
-        return {
-          ...ow,
-          ordinary: event.detail.complete(ow.ordinary),
-        };
-      });
+      .filter((ow) => ow.scene === 'weekday')
+      .map((ow) => ({ ...ow, ordinary: event.detail.complete(ow.ordinary) }));
     return;
   }
 
