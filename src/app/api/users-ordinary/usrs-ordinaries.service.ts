@@ -20,7 +20,7 @@ export class UsrsOrdinariesService extends ConnectService {
   }
 
   findAllByUid(uid: string) {
-    const params = { params: { uid: uid } };
+    const params = { params: { uid } };
     return this.http.get(`${this.basePath}/list`, params).pipe(retry(2), catchError(this.errorService.handleError));
   }
 
@@ -35,11 +35,7 @@ export class UsrsOrdinariesService extends ConnectService {
       alert('日常名がありません！');
       return;
     }
-    if (
-      !weekdays.filter((w) => {
-        return w.isChecked;
-      })
-    ) {
+    if (!weekdays.filter((w) => w.isChecked)) {
       alert('曜日が選択されていません！');
       return;
     }
@@ -50,12 +46,8 @@ export class UsrsOrdinariesService extends ConnectService {
       // 日常の入力項目初期化
       ordinary.name = '';
       // 登録する曜日毎にweekdaysを保存し、まとめてusersOrdinaryに追加
-      const tmpWeekday: [] = weekdays.filter((w) => {
-        return w.isChecked;
-      });
-      const tmpWeekdayLength: number = weekdays.filter((w) => {
-        return w.isChecked;
-      }).length;
+      const tmpWeekday: [] = weekdays.filter((w) => w.isChecked);
+      const tmpWeekdayLength: number = weekdays.filter((w) => w.isChecked).length;
       // 雛形作成
       usersOrdinary.isClosed = false;
       usersOrdinary.ordinary = tmpOrdinary;
