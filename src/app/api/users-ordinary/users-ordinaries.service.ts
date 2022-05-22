@@ -10,7 +10,7 @@ import { OrdinariesService } from '../ordinary/ordinaries.service';
 @Injectable({
   providedIn: 'root',
 })
-export class UsrsOrdinariesService extends ConnectService {
+export class UsersOrdinariesService extends ConnectService {
   basePath: string = this.basePath + '/api/users-ordinaries';
   http: HttpClient = this.http;
   errorService: ErrorService = this.errorService;

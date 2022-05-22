@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { format } from 'date-fns';
-import { UsrsOrdinariesService } from 'src/app/api/users-ordinary/usrs-ordinaries.service';
+import { UsersOrdinariesService } from 'src/app/api/users-ordinary/users-ordinaries.service';
 
 @Component({
   selector: 'app-ordinary-modal',
@@ -16,7 +16,7 @@ export class OrdinaryModalComponent implements OnInit {
   @Input() usersOrdinary;
   @Input() ordinariesWeekday;
 
-  constructor(private modalController: ModalController, private usersOrdinaryService: UsrsOrdinariesService) {}
+  constructor(private modalController: ModalController, private usersOrdinaryService: UsersOrdinariesService) {}
 
   ngOnInit() {
     this.usersOrdinary.startedOn = format(this.usersOrdinary.startedOn, 'YYYY-MM-DD');
