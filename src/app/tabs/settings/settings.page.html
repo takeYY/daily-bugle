@@ -7,7 +7,7 @@
 <ion-content>
   <ion-list>
     <ion-item button="true" *ngFor="let content of contents" (click)="action_router(content.action)">
-      <ion-icon name="{{ content.icon }}"></ion-icon>
+      <ion-icon slot="start" name="{{ content.icon }}"></ion-icon>
       <ion-label>{{ content.label }}</ion-label>
     </ion-item>
   </ion-list>

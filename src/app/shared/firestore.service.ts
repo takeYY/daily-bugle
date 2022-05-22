@@ -34,6 +34,7 @@ export class FirestoreService {
     this.userDoc = doc(this.af, `users/${uid}`);
     return docData(this.userDoc).pipe(first()).toPromise(Promise);
   }
+
   userSet(user: IUser): Promise<void> {
     return setDoc(this.userDoc, user);
   }
