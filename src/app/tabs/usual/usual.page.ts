@@ -76,7 +76,6 @@ export class UsualPage {
       .pipe(first())
       .forEach((response) => {
         this.usersOrdinaries = response;
-        loading.dismiss();
         this.achievements = [];
         if (!this.usersOrdinaries) {
           //this.achievements = [];
@@ -88,7 +87,6 @@ export class UsualPage {
           .findAllByDate(this.uid, now)
           .pipe(first())
           .forEach(async (res) => {
-            const hasAchievement: any = res;
             this.achievements = await res;
             const tmpAchievements = [];
             // 今日分のachievementsがなかったら新たに生成
@@ -105,7 +103,8 @@ export class UsualPage {
                     createdAt: '',
                     comment: '',
                   })
-                  .subscribe((r) => {
+                  .pipe(first())
+                  .forEach((r) => {
                     const weekdayLength = uo.weekdays.length;
                     tmpAchievements.push({
                       ...r,
@@ -121,6 +120,14 @@ export class UsualPage {
               }
             }
           });
+      })
+      .then(() => {
+        loading.dismiss();
+      })
+      .catch((error) => {
+        loading.dismiss();
+        console.error(error);
+        throw error;
       });
   }
 
@@ -193,7 +200,7 @@ export class UsualPage {
     this.achievementService
       .updateData(achievement.id, changedAchievement)
       .pipe(first())
-      .forEach((achi) => {})
+      .forEach(() => {})
       .then(async () => {
         const toast = await this.toastController.create({
           message: `「${changedAchievement.usersOrdinaries.ordinary.name}」が達成されました。`,
