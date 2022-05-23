@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController, ToastController } from '@ionic/angular';
 import { format } from 'date-fns';
 import { UsersOrdinariesService } from 'src/app/api/users-ordinary/users-ordinaries.service';
 
@@ -16,7 +16,11 @@ export class OrdinaryModalComponent implements OnInit {
   @Input() usersOrdinary;
   @Input() achievements;
 
-  constructor(private modalController: ModalController, private usersOrdinaryService: UsersOrdinariesService) {}
+  constructor(
+    private modalController: ModalController,
+    private toastController: ToastController,
+    private usersOrdinaryService: UsersOrdinariesService,
+  ) {}
 
   ngOnInit() {
     this.usersOrdinary.startedOn = format(this.usersOrdinary.startedOn, 'YYYY-MM-DD');
@@ -34,11 +38,24 @@ export class OrdinaryModalComponent implements OnInit {
 
     console.log('@achievements', this.achievements);
 
-    this.onModalDismiss();
+    this.onModalDismiss(`「${this.ordinary.name}」が作成されました。`);
     return this.achievements;
   }
 
-  onModalDismiss(): void {
-    this.modalController.dismiss();
+  onModalDismiss(message: string): void {
+    this.modalController
+      .dismiss()
+      .then(async () => {
+        const toast = await this.toastController.create({
+          message,
+          duration: 3000,
+          position: 'top',
+        });
+        await toast.present();
+      })
+      .catch((error) => {
+        console.error(error);
+        throw error;
+      });
   }
 }
