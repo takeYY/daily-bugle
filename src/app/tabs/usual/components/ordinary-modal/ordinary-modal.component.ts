@@ -40,10 +40,14 @@ export class OrdinaryModalComponent implements OnInit {
     return this.achievements;
   }
 
-  onModalDismiss(message: string): void {
+  onModalDismiss(message?: string): void {
     this.modalController
       .dismiss()
       .then(async () => {
+        if (!message) {
+          return;
+        }
+
         const toast = await this.toastController.create({
           message,
           duration: 3000,
