@@ -26,4 +26,9 @@ export class AchievementsService extends ConnectService {
     const params = { params: { uid, date } };
     return this.http.get(`${this.basePath}/query`, params).pipe(retry(2), catchError(this.errorService.handleError));
   }
+
+  updateData(id: string, data) {
+    const params = { isAchieved: data.isAchieved, comment: data.comment };
+    return this.http.patch(`${this.basePath}/${id}`, params).pipe(retry(2), catchError(this.errorService.handleError));
+  }
 }
