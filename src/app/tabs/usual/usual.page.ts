@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { IonReorderGroup, ModalController } from '@ionic/angular';
+import { IonReorderGroup, ModalController, ToastController } from '@ionic/angular';
 
 import { LoadingController } from '@ionic/angular';
 import { format } from 'date-fns';
@@ -47,6 +47,7 @@ export class UsualPage {
   constructor(
     private loadingController: LoadingController,
     private modalController: ModalController,
+    private toastController: ToastController,
     private auth: AuthService,
     private firestore: FirestoreService,
     private weekdayService: WeekdaysService,
@@ -197,6 +198,18 @@ export class UsualPage {
       .pipe(first())
       .forEach((achi) => {
         console.log(achi);
+      })
+      .then(async () => {
+        const toast = await this.toastController.create({
+          message: `「${changedAchievement.usersOrdinaries.ordinary.name}」が達成されました。`,
+          duration: 3000,
+          position: 'top',
+        });
+        await toast.present();
+      })
+      .catch((error) => {
+        console.error(error);
+        throw error;
       });
   }
 }
