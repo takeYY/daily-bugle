@@ -9,6 +9,7 @@ import { environment } from '../../environments/environment';
 import { IOrdinary } from '../interfaces/ordinary/IOrdinary';
 import { IWeekday } from '../interfaces/weekday/IWeekday';
 import { IUsersOrdinary } from '../interfaces/users-ordinary/IUsersOrdinary';
+import { IAchievement } from '../interfaces/achievement/IAchievement';
 
 @Injectable({
   providedIn: 'root',
@@ -16,18 +17,18 @@ import { IUsersOrdinary } from '../interfaces/users-ordinary/IUsersOrdinary';
 // TODO インターセプターを導入
 export class ConnectService {
   basePath: string = environment.apiUrl;
-  constructor(public http: HttpClient, public errorService: ErrorService) {}
   httpOptions: any = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
     }),
   };
+  constructor(public http: HttpClient, public errorService: ErrorService) {}
 
   getList(): Observable<ArrayBuffer> {
     return this.http.get(this.basePath, this.httpOptions).pipe(retry(2), catchError(this.errorService.handleError));
   }
 
-  postData(data: IOrdinary | IWeekday | IUsersOrdinary) {
+  postData(data: IOrdinary | IWeekday | IUsersOrdinary | IAchievement) {
     return this.http
       .post(this.basePath, data, this.httpOptions)
       .pipe(retry(2), catchError(this.errorService.handleError));
