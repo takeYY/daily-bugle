@@ -76,7 +76,6 @@ export class UsersOrdinariesService extends ConnectService {
           },
         };
         this.achievementService.postData(achievement).subscribe((result) => {
-          console.log('@result', result);
           ordinariesWeekday.push({
             ...result,
             scene: tmpWeekdayLength === 7 ? 'everyday' : tmpWeekdayLength === 1 ? 'week' : 'weekday',

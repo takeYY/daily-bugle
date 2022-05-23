@@ -36,8 +36,6 @@ export class OrdinaryModalComponent implements OnInit {
       this.achievements,
     );
 
-    console.log('@achievements', this.achievements);
-
     this.onModalDismiss(`「${this.ordinary.name}」が作成されました。`);
     return this.achievements;
   }
