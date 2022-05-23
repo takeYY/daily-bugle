@@ -14,7 +14,7 @@ export class OrdinaryModalComponent implements OnInit {
   @Input() now: string;
   @Input() weekdays;
   @Input() usersOrdinary;
-  @Input() ordinariesWeekday;
+  @Input() achievements;
 
   constructor(private modalController: ModalController, private usersOrdinaryService: UsersOrdinariesService) {}
 
@@ -24,15 +24,18 @@ export class OrdinaryModalComponent implements OnInit {
   }
 
   async onCreateOrdinary() {
-    this.ordinariesWeekday = await this.usersOrdinaryService.createUesrsOrdinaries(
+    this.achievements = await this.usersOrdinaryService.createUesrsOrdinaries(
       this.user,
       this.ordinary,
       this.weekdays,
       this.usersOrdinary,
-      this.ordinariesWeekday,
+      this.achievements,
     );
 
+    console.log('@achievements', this.achievements);
+
     this.onModalDismiss();
+    return this.achievements;
   }
 
   onModalDismiss(): void {
