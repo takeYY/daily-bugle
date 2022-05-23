@@ -117,10 +117,9 @@ export class UsualPage {
               });
               this.achievements = tmpAchievements;
             } else {
-              for (let i = 0; i < this.achievements.length; i++) {
-                const weekdayLength = await this.achievements[i].usersOrdinaries.weekdays.length;
-                this.achievements[i].scene =
-                  weekdayLength === 7 ? 'everyday' : weekdayLength === 1 ? 'week' : 'weekday';
+              for (const achievement of this.achievements) {
+                const weekdayLength = await achievement.usersOrdinaries.weekdays.length;
+                achievement.scene = weekdayLength === 7 ? 'everyday' : weekdayLength === 1 ? 'week' : 'weekday';
               }
             }
           });
