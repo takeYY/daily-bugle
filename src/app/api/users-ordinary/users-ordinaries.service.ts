@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, retry } from 'rxjs/operators';
+import { catchError, first, retry } from 'rxjs/operators';
 import { AchievementsService } from '../achievement/achievements.service';
 
 import { ConnectService } from '../connect.service';
@@ -46,46 +46,54 @@ export class UsersOrdinariesService extends ConnectService {
       return;
     }
     // 日常の登録
-    this.ordinariesService.postData(ordinary).subscribe((response) => {
-      // 日常のデータを一時保存
-      const tmpOrdinary = { id: response['id'], name: response['name'] };
-      // 日常の入力項目初期化
-      ordinary.name = '';
-      // 登録する曜日毎にweekdaysを保存し、まとめてusersOrdinaryに追加
-      const tmpWeekday: [] = weekdays.filter((w) => w.isChecked);
-      const tmpWeekdayLength: number = weekdays.filter((w) => w.isChecked).length;
-      // 雛形作成
-      usersOrdinary.isClosed = false;
-      usersOrdinary.ordinary = tmpOrdinary;
-      usersOrdinary.weekdays = tmpWeekday;
-      this.postData(usersOrdinary).subscribe((res) => {
-        const achievement = {
-          comment: '',
-          isAchieved: false,
-          userId: res['userId'],
-          createdAt: '',
-          usersOrdinaries: {
-            id: res['id'],
-            userId: res['userId'],
-            startedOn: res['startedOn'],
-            createdAt: res['createdAt'],
-            updatedAt: res['updatedAt'],
-            isClosed: res['isClosed'],
-            ordinary: tmpOrdinary,
-            weekdays: tmpWeekday,
-          },
-        };
-        this.achievementService.postData(achievement).subscribe((result) => {
-          ordinariesWeekday.push({
-            ...result,
-            scene: tmpWeekdayLength === 7 ? 'everyday' : tmpWeekdayLength === 1 ? 'week' : 'weekday',
+    this.ordinariesService
+      .postData(ordinary)
+      .pipe(first())
+      .forEach((response) => {
+        // 日常のデータを一時保存
+        const tmpOrdinary = { id: response['id'], name: response['name'] };
+        // 日常の入力項目初期化
+        ordinary.name = '';
+        // 登録する曜日毎にweekdaysを保存し、まとめてusersOrdinaryに追加
+        const tmpWeekday: [] = weekdays.filter((w) => w.isChecked);
+        const tmpWeekdayLength: number = weekdays.filter((w) => w.isChecked).length;
+        // 雛形作成
+        usersOrdinary.isClosed = false;
+        usersOrdinary.ordinary = tmpOrdinary;
+        usersOrdinary.weekdays = tmpWeekday;
+        this.postData(usersOrdinary)
+          .pipe(first())
+          .forEach((res) => {
+            const achievement = {
+              comment: '',
+              isAchieved: false,
+              userId: res['userId'],
+              createdAt: '',
+              usersOrdinaries: {
+                id: res['id'],
+                userId: res['userId'],
+                startedOn: res['startedOn'],
+                createdAt: res['createdAt'],
+                updatedAt: res['updatedAt'],
+                isClosed: res['isClosed'],
+                ordinary: tmpOrdinary,
+                weekdays: tmpWeekday,
+              },
+            };
+            this.achievementService
+              .postData(achievement)
+              .pipe(first())
+              .forEach((result) => {
+                ordinariesWeekday.push({
+                  ...result,
+                  scene: tmpWeekdayLength === 7 ? 'everyday' : tmpWeekdayLength === 1 ? 'week' : 'weekday',
+                });
+              });
+            weekdays.map((w) => {
+              w.isChecked = false;
+            });
           });
-        });
-        weekdays.map((w) => {
-          w.isChecked = false;
-        });
       });
-    });
     return ordinariesWeekday;
   }
 }
