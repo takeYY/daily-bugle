@@ -39,6 +39,7 @@
                 slot="start"
                 color="primary"
                 checked="{{ achievement.isAchieved }}"
+                disabled="{{ achievement.isAchieved }}"
                 [(ngModel)]="achievement.isAchieved"
                 (click)="onAchievedOrdinary($event, achievement)"
               ></ion-checkbox>
@@ -58,7 +59,7 @@
                 slot="start"
                 color="primary"
                 checked="{{ achievement.isAchieved }}"
-                disabled="{{ !achievement.isAchieved && !achievement.usersOrdinaries }}"
+                disabled="{{ achievement.isAchieved }}"
                 [(ngModel)]="achievement.isAchieved"
                 (click)="onAchievedOrdinary($event, achievement)"
               ></ion-checkbox>
@@ -78,7 +79,7 @@
                 slot="start"
                 color="primary"
                 checked="{{ achievement.isAchieved }}"
-                disabled="{{ !achievement.isAchieved && !achievement.usersOrdinaries }}"
+                disabled="{{ achievement.isAchieved }}"
                 [(ngModel)]="achievement.isAchieved"
                 (click)="onAchievedOrdinary($event, achievement)"
               ></ion-checkbox>
