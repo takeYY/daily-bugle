@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, retry } from 'rxjs/operators';
+import { AchievementsService } from '../achievement/achievements.service';
 
 import { ConnectService } from '../connect.service';
 import { ErrorService } from '../error.service';
@@ -15,7 +16,12 @@ export class UsersOrdinariesService extends ConnectService {
   http: HttpClient = this.http;
   errorService: ErrorService = this.errorService;
 
-  constructor(http: HttpClient, errorService: ErrorService, private ordinariesService: OrdinariesService) {
+  constructor(
+    http: HttpClient,
+    errorService: ErrorService,
+    private ordinariesService: OrdinariesService,
+    private achievementService: AchievementsService,
+  ) {
     super(http, errorService);
   }
 
@@ -53,10 +59,28 @@ export class UsersOrdinariesService extends ConnectService {
       usersOrdinary.ordinary = tmpOrdinary;
       usersOrdinary.weekdays = tmpWeekday;
       this.postData(usersOrdinary).subscribe((res) => {
-        ordinariesWeekday.push({
-          ordinary: tmpOrdinary,
-          weekdays: tmpWeekday,
-          scene: tmpWeekdayLength === 7 ? 'everyday' : tmpWeekdayLength === 1 ? 'week' : 'weekday',
+        const achievement = {
+          comment: '',
+          isAchieved: false,
+          userId: res['userId'],
+          createdAt: '',
+          usersOrdinaries: {
+            id: res['id'],
+            userId: res['userId'],
+            startedOn: res['startedOn'],
+            createdAt: res['createdAt'],
+            updatedAt: res['updatedAt'],
+            isClosed: res['isClosed'],
+            ordinary: tmpOrdinary,
+            weekdays: tmpWeekday,
+          },
+        };
+        this.achievementService.postData(achievement).subscribe((result) => {
+          console.log('@result', result);
+          ordinariesWeekday.push({
+            ...result,
+            scene: tmpWeekdayLength === 7 ? 'everyday' : tmpWeekdayLength === 1 ? 'week' : 'weekday',
+          });
         });
         weekdays.map((w) => {
           w.isChecked = false;
