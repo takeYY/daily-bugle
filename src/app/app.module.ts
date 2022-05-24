@@ -8,6 +8,7 @@ import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { getApp, provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { indexedDBLocalPersistence, initializeAuth, provideAuth } from '@angular/fire/auth';
 import { AuthGuard } from '@angular/fire/auth-guard';
+import { NgChartsModule } from 'ng2-charts';
 
 import { environment } from '../environments/environment';
 import { AppComponent } from './app.component';
@@ -27,6 +28,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideFirestore(() => getFirestore()),
     provideAuth(() => initializeAuth(getApp(), { persistence: indexedDBLocalPersistence })),
+    NgChartsModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production,
       // Register the ServiceWorker as soon as the application is stable

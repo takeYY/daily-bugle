@@ -4,4 +4,21 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true"> </ion-content>
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-grid>
+      <ion-row>
+        <ion-col col-6 col-md>
+          <div><canvas #radarChart></canvas></div>
+        </ion-col>
+        <ion-col col-6 col-md>
+          <div><canvas #allAchievementsPie></canvas></div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-card>
+
+  <ion-card *ngFor="let data of pieChart">
+    <canvas #pr_chart></canvas>
+  </ion-card>
+</ion-content>
