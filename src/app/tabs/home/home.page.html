@@ -5,24 +5,20 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <!--
-    TODO: 折れ線グラフの追加
-  -->
-  <!-- <ion-card>
-    <div><canvas #barChart3></canvas></div>
-  </ion-card> -->
   <ion-card>
-    <ion-card-header>
-      <ion-card-title>週間の達成度(モック)</ion-card-title>
-      <div><canvas #barChart4></canvas></div>
-    </ion-card-header>
+    <ion-grid>
+      <ion-row>
+        <ion-col col-6 col-md>
+          <div><canvas #radarChart></canvas></div>
+        </ion-col>
+        <ion-col col-6 col-md>
+          <div><canvas #allAchievementsPie></canvas></div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
   </ion-card>
 
-  <ion-card>
-    <div><canvas #allAchievementsPie></canvas></div>
-  </ion-card>
-
-  <ion-card *ngFor="let data of achievementPie">
+  <ion-card *ngFor="let data of pieChart">
     <canvas #pr_chart></canvas>
   </ion-card>
 </ion-content>
