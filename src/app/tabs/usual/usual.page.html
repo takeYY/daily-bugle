@@ -16,79 +16,35 @@
   </ion-toolbar>
 
   <ion-segment [(ngModel)]="scene" (ionChange)="segmentChanged($event)">
-    <ion-segment-button value="everyday" checked>
-      <ion-label>毎日</ion-label>
-    </ion-segment-button>
-    <ion-segment-button value="week">
-      <ion-label>週一</ion-label>
-    </ion-segment-button>
-    <ion-segment-button value="weekday">
-      <ion-label>曜日</ion-label>
+    <ion-segment-button value="{{ s.scene }}" *ngFor="let s of scenes">
+      <ion-label>{{ s.name }}</ion-label>
     </ion-segment-button>
   </ion-segment>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <div [ngSwitch]="scene">
-    <div *ngSwitchCase="'everyday'">
-      <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="true">
-        <ng-container *ngFor="let achievement of achievements">
-          <ng-container *ngIf="achievement.scene === 'everyday'">
-            <ion-item>
-              <ion-checkbox
-                slot="start"
-                color="primary"
-                checked="{{ achievement.isAchieved }}"
-                disabled="{{ achievement.isAchieved }}"
-                [(ngModel)]="achievement.isAchieved"
-                (click)="onAchievedOrdinary($event, achievement)"
-              ></ion-checkbox>
-              <ion-label> {{ achievement.usersOrdinaries.ordinary.name }} </ion-label>
-              <ion-reorder slot="end"></ion-reorder>
-            </ion-item>
+    <ng-container *ngFor="let s of scenes">
+      <div *ngSwitchCase="s.scene">
+        <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="true">
+          <ng-container *ngFor="let achievement of achievements">
+            <ng-container *ngIf="achievement.scene === s.scene">
+              <ion-item>
+                <ion-checkbox
+                  slot="start"
+                  color="primary"
+                  checked="{{ achievement.isAchieved }}"
+                  disabled="{{ achievement.isAchieved }}"
+                  [(ngModel)]="achievement.isAchieved"
+                  (click)="onAchievedOrdinary($event, achievement)"
+                ></ion-checkbox>
+                <ion-label> {{ achievement.usersOrdinaries.ordinary.name }} </ion-label>
+                <ion-reorder slot="end"></ion-reorder>
+              </ion-item>
+            </ng-container>
           </ng-container>
-        </ng-container>
-      </ion-reorder-group>
-    </div>
-    <div *ngSwitchCase="'week'">
-      <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="true">
-        <ng-container *ngFor="let achievement of achievements">
-          <ng-container *ngIf="achievement.scene === 'week'">
-            <ion-item>
-              <ion-checkbox
-                slot="start"
-                color="primary"
-                checked="{{ achievement.isAchieved }}"
-                disabled="{{ achievement.isAchieved }}"
-                [(ngModel)]="achievement.isAchieved"
-                (click)="onAchievedOrdinary($event, achievement)"
-              ></ion-checkbox>
-              <ion-label> {{ achievement.usersOrdinaries.ordinary.name }} </ion-label>
-              <ion-reorder slot="end"></ion-reorder>
-            </ion-item>
-          </ng-container>
-        </ng-container>
-      </ion-reorder-group>
-    </div>
-    <div *ngSwitchCase="'weekday'">
-      <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="true">
-        <ng-container *ngFor="let achievement of achievements">
-          <ng-container *ngIf="achievement.scene === 'weekday'">
-            <ion-item>
-              <ion-checkbox
-                slot="start"
-                color="primary"
-                checked="{{ achievement.isAchieved }}"
-                disabled="{{ achievement.isAchieved }}"
-                [(ngModel)]="achievement.isAchieved"
-                (click)="onAchievedOrdinary($event, achievement)"
-              ></ion-checkbox>
-              <ion-label> {{ achievement.usersOrdinaries.ordinary.name }} </ion-label>
-              <ion-reorder slot="end"></ion-reorder>
-            </ion-item>
-          </ng-container>
-        </ng-container>
-      </ion-reorder-group>
-    </div>
+        </ion-reorder-group>
+      </div>
+    </ng-container>
   </div>
 </ion-content>

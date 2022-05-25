@@ -26,7 +26,12 @@ export class UsualPage {
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
 
   title = '日常';
-  scene = 'everyday';
+  scenes = [
+    { scene: 'everyday', name: '毎日' },
+    { scene: 'week', name: '週一' },
+    { scene: 'weekday', name: '曜日' },
+  ];
+  scene = this.scenes[0].scene;
   weekdays;
   usersOrdinaries; //constで宣言可能
   achievements: any;
