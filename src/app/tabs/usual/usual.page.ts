@@ -188,6 +188,7 @@ export class UsualPage {
         weekdays: this.weekdays,
         usersOrdinary: this.usersOrdinary,
         achievements: this.achievements,
+        scenes: this.scenes,
       },
     });
 
