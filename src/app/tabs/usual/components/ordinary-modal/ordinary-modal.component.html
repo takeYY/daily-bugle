@@ -11,30 +11,52 @@
   <form>
     <ion-item>
       <ion-label position="floating">日常名</ion-label>
-      <ion-input placeholder="歯を磨く" name="ordinary_name" [(ngModel)]="ordinary.name" required="true"></ion-input>
+      <ion-input placeholder="歯を磨く" name="ordinaryName" [(ngModel)]="ordinary.name" required="true"></ion-input>
     </ion-item>
 
-    <ion-grid fixed>
-      <ion-list-header>
-        <h3>実施する曜日</h3>
-      </ion-list-header>
-      <ion-list>
-        <ion-item *ngFor="let weekday of weekdays">
-          <ion-label>{{ weekday.name }}</ion-label>
-          <ion-checkbox slot="start" [(ngModel)]="weekday.isChecked" name="weekdays"></ion-checkbox>
-        </ion-item>
-      </ion-list>
+    <ion-list-header>
+      <h3>実施曜日</h3>
+    </ion-list-header>
+    <ion-segment [(ngModel)]="scene" [ngModelOptions]="{ standalone: true }">
+      <ion-segment-button [value]="s.scene" *ngFor="let s of scenes">
+        <ion-label>{{ s.name }}</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <div [ngSwitch]="scene">
+      <ng-container *ngFor="let s of scenes">
+        <div *ngSwitchCase="s.scene">
+          <ng-container *ngIf="s.scene === 'day'">
+            <ion-list>
+              <ion-item *ngFor="let weekday of weekdays">
+                <ion-label>
+                  {{ weekday.name }}
+                </ion-label>
+                <ion-checkbox
+                  slot="start"
+                  [(ngModel)]="weekday.isChecked"
+                  [ngModelOptions]="{ standalone: true }"
+                ></ion-checkbox>
+              </ion-item>
+            </ion-list>
+          </ng-container>
+        </div>
+      </ng-container>
+    </div>
+
+    <ion-list-header>
       <h3>日常開始日</h3>
-      <ion-datetime
-        size="cover"
-        presentation="date"
-        [(ngModel)]="usersOrdinary.startedOn"
-        displayFormat="yyyy-MM-dd"
-        pickerFormat="yyyy-MM-dd"
-        min="{{ now }}"
-        name="startedOn"
-      ></ion-datetime>
-    </ion-grid>
+    </ion-list-header>
+    <ion-datetime
+      size="cover"
+      presentation="date"
+      [(ngModel)]="usersOrdinary.startedOn"
+      [ngModelOptions]="{ standalone: true }"
+      displayFormat="yyyy-MM-dd"
+      pickerFormat="yyyy-MM-dd"
+      min="{{ now }}"
+      name="startedOn"
+    ></ion-datetime>
   </form>
 
   <ion-button expand="block" (click)="onCreateOrdinary()">

@@ -15,6 +15,9 @@ export class OrdinaryModalComponent implements OnInit {
   @Input() weekdays;
   @Input() usersOrdinary;
   @Input() achievements;
+  scenes;
+
+  scene;
 
   constructor(
     private modalController: ModalController,
@@ -25,9 +28,39 @@ export class OrdinaryModalComponent implements OnInit {
   ngOnInit() {
     this.usersOrdinary.startedOn = format(this.usersOrdinary.startedOn, 'YYYY-MM-DD');
     this.now = format(this.now, 'YYYY-MM-DD');
+    this.scene = this.scenes[0].scene;
+    this.scenes = [
+      { scene: 'everyday', name: '毎日' },
+      { scene: 'weekday', name: '平日' },
+      { scene: 'weekend', name: '土日' },
+      { scene: 'day', name: '曜日' },
+    ];
   }
 
   async onCreateOrdinary() {
+    if (this.scene === 'everyday') {
+      this.weekdays = await this.weekdays.map((weekday) => {
+        return {
+          ...weekday,
+          isChecked: true,
+        };
+      });
+    } else if (this.scene === 'weekday') {
+      this.weekdays = await this.weekdays.map((weekday) => {
+        return {
+          ...weekday,
+          isChecked: true ? [1, 2, 3, 4, 5].indexOf(weekday.order) !== -1 : false,
+        };
+      });
+    } else if (this.scene === 'weekend') {
+      this.weekdays = await this.weekdays.map((weekday) => {
+        return {
+          ...weekday,
+          isChecked: true ? [6, 7].indexOf(weekday.order) !== -1 : false,
+        };
+      });
+    }
+
     this.achievements = await this.usersOrdinaryService.createUesrsOrdinaries(
       this.user,
       this.ordinary,
