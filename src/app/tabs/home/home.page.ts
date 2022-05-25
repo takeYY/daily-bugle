@@ -1,5 +1,5 @@
 import { Component, ElementRef, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { LoadingController, ModalController } from '@ionic/angular';
 import { Chart } from 'chart.js';
 
 import { ProfilePage } from '../../shared/profile/profile.page';
@@ -33,11 +33,18 @@ export class HomePage {
   constructor(
     private auth: AuthService,
     private userService: UserService,
+    private loadingController: LoadingController,
     private modalController: ModalController,
     private achievementsService: AchievementsService,
   ) {}
 
   async ionViewWillEnter(): Promise<void> {
+    const loading = await this.loadingController.create({
+      message: 'Loading...',
+    });
+    if (!this.achievements || !this.achievements.length) {
+      await loading.present();
+    }
     this.uid = await this.auth.getUserId();
     this.userService.getList().subscribe(async (response) => {
       this.users = response;
@@ -70,6 +77,7 @@ export class HomePage {
         }).length,
       };
     });
+    loading.dismiss();
 
     // chartの作成
     this.createRadarChartByWeek();
