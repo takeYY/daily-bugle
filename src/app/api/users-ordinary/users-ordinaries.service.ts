@@ -27,7 +27,7 @@ export class UsersOrdinariesService extends ConnectService {
 
   findAllByUid(uid: string) {
     const params = { params: { uid } };
-    return this.http.get(`${this.basePath}/list`, params).pipe(retry(2), catchError(this.errorService.handleError));
+    return this.http.get(`${this.basePath}/query`, params).pipe(retry(2), catchError(this.errorService.handleError));
   }
 
   createUesrsOrdinaries(user, ordinary, weekdays, usersOrdinary, ordinariesWeekday) {
