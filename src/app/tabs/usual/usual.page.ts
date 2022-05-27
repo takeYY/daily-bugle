@@ -27,6 +27,7 @@ export class UsualPage {
 
   title = '日常';
   scenes = [
+    { scene: 'today', name: '本日の日常' },
     { scene: 'everyday', name: '毎日' },
     { scene: 'week', name: '週一' },
     { scene: 'weekday', name: '曜日' },
@@ -35,6 +36,27 @@ export class UsualPage {
   weekdays;
   usersOrdinaries; //constで宣言可能
   achievements: any;
+  usersOrdinariesOfToday: any;
+  tmp: {
+    everyday: [
+      {
+        name: string;
+        startedOn: Date;
+      },
+    ];
+    week: {
+      月曜日: [
+        {
+          name: string;
+          startedOn: Date;
+        },
+        {},
+        {},
+      ];
+      火曜日;
+    };
+    weekday: [];
+  };
 
   private uid: string; //userID
   private user: IUser; // User
@@ -70,10 +92,10 @@ export class UsualPage {
     this.uid = await this.auth.getUserId();
     this.usersOrdinary.userId = this.uid;
     this.user = await this.firestore.userInit(this.uid);
-    // weekdaysの取得
-    this.weekdayService.getList().subscribe((response) => {
-      this.weekdays = response;
-    });
+    const now = format(new Date(), 'YYYY-MM-DD');
+    const today = new Date(`${now} `);
+    const tomorrow = new Date(`${now} `);
+    tomorrow.setDate(tomorrow.getDate() + 1);
 
     // ログイン中のユーザが持つ日常の取得
     await this.usersOrdinaryService
@@ -86,23 +108,36 @@ export class UsualPage {
           //this.achievements = [];
           return;
         }
+        this.usersOrdinariesOfToday = this.usersOrdinaries.filter((usersOrdinary) => {
+          const startedOn = new Date(usersOrdinary.startedOn._seconds * 1000);
+          const weeks = [];
+          usersOrdinary.weekdays.forEach((weekday) => {
+            weeks.push(weekday.order % 7);
+          });
+          return startedOn < tomorrow && !usersOrdinary.isClosed && weeks.indexOf(today.getDay()) !== -1;
+        });
+      })
+      .then(() => {
+        console.log('@usersOrdinaries', this.usersOrdinaries);
         // 今日分のachievementsを取得
-        const now = format(new Date(), 'YYYY-MM-DD');
         this.achievementService
           .findAllByDate(this.uid, now)
           .pipe(first())
-          .forEach(async (res) => {
-            this.achievements = await res;
+          .forEach((res) => {
+            this.achievements = res;
+          })
+          .then(() => {
+            console.log('@achievements', this.achievements);
             const tmpAchievements = [];
             // 今日分のachievementsがなかったら新たに生成
             if (!this.achievements.length) {
-              this.usersOrdinaries.map((uo) => {
+              this.usersOrdinariesOfToday.map((uo) => {
                 this.achievementService
                   .postData({
                     userId: this.uid,
                     usersOrdinaries: {
                       ...uo,
-                      ordinary: uo.ordinary[0],
+                      ordinary: uo.ordinary,
                     },
                     isAchieved: false,
                     createdAt: '',
@@ -120,24 +155,73 @@ export class UsualPage {
               this.achievements = tmpAchievements;
             } else {
               for (const achievement of this.achievements) {
-                const weekdayLength = await achievement.usersOrdinaries.weekdays.length;
+                const weekdayLength = achievement.usersOrdinaries.weekdays.length;
                 achievement.scene = weekdayLength === 7 ? 'everyday' : weekdayLength === 1 ? 'week' : 'weekday';
               }
             }
+            for (const usersOrdinary of this.usersOrdinaries) {
+              const weekdayLength = usersOrdinary.weekdays.length;
+              usersOrdinary.scene = weekdayLength === 7 ? 'everyday' : weekdayLength === 1 ? 'week' : 'weekday';
+            }
+            // weekdaysの取得
+            this.weekdayService
+              .getList()
+              .pipe(first())
+              .forEach((response) => {
+                //.subscribe((response) => {
+                this.weekdays = response;
+              })
+              .then(() => {
+                // 日常の種類ごとにデータを構築
+                ['everyday', 'week', 'weekday'].forEach((type) => {
+                  this.usersOrdinariesOfToday[type] = this.usersOrdinaries
+                    .filter((usersOrdinary) => {
+                      return usersOrdinary.scene === type;
+                    })
+                    .map((usersOrdinary) => {
+                      if (type === 'everyday') {
+                        return {
+                          name: usersOrdinary.ordinary.name,
+                          startedOn: new Date(usersOrdinary.startedOn._seconds * 1000),
+                        };
+                      } else if (type === 'week' || type === 'weekday') {
+                        let tmpWeek = {};
+                        for (let weekday of this.weekdays) {
+                          tmpWeek[weekday.name] = [];
+                          const usersOrdinaryWeekName = usersOrdinary.weekdays.map((u) => {
+                            return u.name;
+                          });
+                          const weekdayName = weekday.name;
+                          if (usersOrdinaryWeekName.indexOf(weekdayName) !== -1) {
+                            const content = {
+                              name: usersOrdinary.ordinary.name,
+                              startedOn: new Date(usersOrdinary.startedOn._seconds * 1000),
+                            };
+                            tmpWeek[weekdayName].push(content);
+                          } else {
+                            tmpWeek[weekdayName].push({});
+                          }
+                        }
+
+                        return tmpWeek;
+                      }
+                    });
+                });
+              });
+            console.log('@usersOrdinaries', this.usersOrdinariesOfToday);
           });
-      })
-      .then(() => {
-        loading.dismiss();
       })
       .catch((error) => {
         loading.dismiss();
         console.error(error);
         throw error;
-      });
+      })
+      .finally(() => loading.dismiss());
   }
 
   segmentChanged(event: any): void {
-    console.log(event);
+    //console.log(event);
+    console.log(this.scene);
   }
 
   toggleReorderGroup(): void {
