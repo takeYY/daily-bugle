@@ -119,7 +119,6 @@ export class UsualPage {
                       ordinary: uo.ordinary,
                     },
                     isAchieved: false,
-                    createdAt: '',
                     comment: '',
                   })
                   .pipe(first())
