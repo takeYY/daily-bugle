@@ -1,16 +1,11 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-buttons slot="start">
+    <!-- TODO: 編集機能をつける -->
+    <!-- <ion-buttons slot="start">
       <ion-button (click)="editOrdinary()" icon-only="true" size="small">
         <ion-icon name="settings-sharp"></ion-icon>
       </ion-button>
-    </ion-buttons>
-
-    <ion-buttons slot="end">
-      <ion-button (click)="onCreateOrdinaryModal($event)" icon-only="true" size="small">
-        <ion-icon name="create-sharp"></ion-icon>
-      </ion-button>
-    </ion-buttons>
+    </ion-buttons> -->
 
     <ion-title>{{ title }}</ion-title>
   </ion-toolbar>
@@ -72,4 +67,10 @@
       </div>
     </ng-container>
   </div>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="onCreateOrdinaryModal($event)" icon-only="true">
+      <ion-icon name="add-sharp"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>
