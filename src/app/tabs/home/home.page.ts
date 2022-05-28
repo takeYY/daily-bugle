@@ -21,7 +21,7 @@ export class HomePage {
   @ViewChildren('pr_chart', { read: ElementRef }) chartElementRefs: QueryList<ElementRef>;
 
   title = 'ホーム';
-  pieChart: any[] = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}];
+  pieChart = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}];
 
   private uid: string;
   private users;
@@ -60,29 +60,42 @@ export class HomePage {
       await modal.present();
     });
 
-    await this.getAchievementsByDate(this.uid);
+    await this.getAchievementsByDate(this.uid)
+      .then(() => {
+        console.log('@achievements', this.achievements);
+        // TODO: バックエンド側でデータを加工する
+        const uniqueOrdinary = {};
+        this.achievements.forEach((achievement) => {
+          const usersOrdinariesId = achievement.usersOrdinaries.id;
+          if (uniqueOrdinary[usersOrdinariesId]) {
+            return;
+          }
 
-    // TODO: バックエンド側でデータを加工する
-    const uniqueOrdinary = this.achievements.map((achievement) => achievement.usersOrdinaries.ordinary.name);
-    this.achievementsByOrdinary = uniqueOrdinary.map((ordinary) => {
-      const result = {
-        name: ordinary,
-        isAchieved: this.achievements.filter(
-          (achievement) => achievement.usersOrdinaries.ordinary.name === ordinary && achievement.isAchieved,
-        ).length,
-        achievedLength: this.achievements.filter(
-          (achievement) => achievement.usersOrdinaries.ordinary.name === ordinary,
-        ).length,
-      };
+          const result = {
+            name: achievement.usersOrdinaries.ordinary.name,
+            hasAchieved: this.achievements.filter(
+              (ach) => ach.usersOrdinaries.id === usersOrdinariesId && ach.isAchieved,
+            ).length,
+            count: this.achievements.filter((ach) => ach.usersOrdinaries.id === usersOrdinariesId).length,
+          };
+          uniqueOrdinary[usersOrdinariesId] = result;
+        });
+        this.achievementsByOrdinary = Object.values(uniqueOrdinary);
+        this.achievementsByOrdinary.forEach((_) => this.pieChart.push({}));
+        console.log('@pieChart', this.pieChart);
+      })
+      .catch((e) => {
+        console.error(e);
+        throw e;
+      })
+      .finally(() => {
+        loading.dismiss();
 
-      return result;
-    });
-    loading.dismiss();
-
-    // chartの作成
-    this.createRadarChartByWeek();
-    this.createPieChart();
-    this.createBarChart();
+        // chartの作成
+        this.createRadarChartByWeek();
+        this.createPieChart();
+        this.createBarChart();
+      });
   }
 
   async getAchievementsByDate(uid: string) {
@@ -137,10 +150,10 @@ export class HomePage {
 
   createPieChart() {
     const allAchievementLabels = this.achievementsByOrdinary.map((achievement) => achievement.name);
-    const allAchievementData = this.achievementsByOrdinary.map((achievement) => achievement.isAchieved);
+    const allAchievementData = this.achievementsByOrdinary.map((achievement) => achievement.hasAchieved);
     allAchievementLabels.push('未達成');
     allAchievementData.push(
-      this.achievementsByOrdinary.map((achievement) => achievement.achievedLength).reduce((sum, len) => sum + len, 0),
+      this.achievementsByOrdinary.map((achievement) => achievement.count).reduce((sum, len) => sum + len, 0),
     );
     this.bars[1] = new Chart(this.allAchievementsPie.nativeElement, {
       type: 'pie',
@@ -169,6 +182,10 @@ export class HomePage {
     });
     this.bars[1].canvas.parentNode.style.height = '100%';
     this.bars[1].canvas.parentNode.style.width = '100%';
+
+    console.log('@achievementsByOrd', this.achievementsByOrdinary);
+    console.log('@allData', allAchievementData);
+    console.log('@allLabel', allAchievementLabels);
   }
 
   createBarChart() {
@@ -192,8 +209,8 @@ export class HomePage {
             {
               label: this.achievementsByOrdinary[index].name,
               data: [
-                this.achievementsByOrdinary[index].isAchieved,
-                this.achievementsByOrdinary[index].achievedLength - this.achievementsByOrdinary[index].isAchieved,
+                this.achievementsByOrdinary[index].hasAchieved,
+                this.achievementsByOrdinary[index].count - this.achievementsByOrdinary[index].hasAchieved,
               ],
               borderWidth: 1,
             },
