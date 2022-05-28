@@ -14,12 +14,26 @@ export interface IAchievement {
       isChecked: boolean;
       order: number;
     }[];
-    startedOn: string;
-    createdAt: string;
-    updatedAt: string;
+    startedOn: {
+      _seconds: number;
+      _nanoseconds: number;
+    };
+    createdAt: {
+      _seconds: number;
+      _nanoseconds: number;
+    };
+    updatedAt: {
+      _seconds: number;
+      _nanoseconds: number;
+    };
     isClosed: boolean;
   };
   isAchieved: boolean;
   comment: string;
-  createdAt: string;
+  createdAt?:
+    | {
+        _seconds: number;
+        _nanoseconds: number;
+      }
+    | string;
 }
