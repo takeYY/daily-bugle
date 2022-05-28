@@ -63,19 +63,19 @@ export class HomePage {
     await this.getAchievementsByDate(this.uid);
 
     // TODO: バックエンド側でデータを加工する
-    const uniqueOrdinary = this.achievements.map((achievement) => {
-      return achievement.usersOrdinaries.ordinary.name;
-    });
+    const uniqueOrdinary = this.achievements.map((achievement) => achievement.usersOrdinaries.ordinary.name);
     this.achievementsByOrdinary = uniqueOrdinary.map((ordinary) => {
-      return {
+      const result = {
         name: ordinary,
-        isAchieved: this.achievements.filter((achievement) => {
-          return achievement.usersOrdinaries.ordinary.name === ordinary && achievement.isAchieved;
-        }).length,
-        achievedLength: this.achievements.filter((achievement) => {
-          return achievement.usersOrdinaries.ordinary.name === ordinary;
-        }).length,
+        isAchieved: this.achievements.filter(
+          (achievement) => achievement.usersOrdinaries.ordinary.name === ordinary && achievement.isAchieved,
+        ).length,
+        achievedLength: this.achievements.filter(
+          (achievement) => achievement.usersOrdinaries.ordinary.name === ordinary,
+        ).length,
       };
+
+      return result;
     });
     loading.dismiss();
 
@@ -136,19 +136,11 @@ export class HomePage {
   }
 
   createPieChart() {
-    const allAchievementLabels = this.achievementsByOrdinary.map((achievement) => {
-      return achievement.name;
-    });
-    const allAchievementData = this.achievementsByOrdinary.map((achievement) => {
-      return achievement.isAchieved;
-    });
+    const allAchievementLabels = this.achievementsByOrdinary.map((achievement) => achievement.name);
+    const allAchievementData = this.achievementsByOrdinary.map((achievement) => achievement.isAchieved);
     allAchievementLabels.push('未達成');
     allAchievementData.push(
-      this.achievementsByOrdinary
-        .map((achievement) => {
-          return achievement.achievedLength;
-        })
-        .reduce((sum, len) => sum + len, 0),
+      this.achievementsByOrdinary.map((achievement) => achievement.achievedLength).reduce((sum, len) => sum + len, 0),
     );
     this.bars[1] = new Chart(this.allAchievementsPie.nativeElement, {
       type: 'pie',
@@ -181,7 +173,7 @@ export class HomePage {
 
   createBarChart() {
     this.charts = this.chartElementRefs.map((chartElementRef, index) => {
-      return new Chart(chartElementRef.nativeElement, {
+      const result = new Chart(chartElementRef.nativeElement, {
         type: 'pie',
         options: {
           responsive: true,
@@ -208,6 +200,8 @@ export class HomePage {
           ],
         },
       });
+
+      return result;
     });
   }
 }
