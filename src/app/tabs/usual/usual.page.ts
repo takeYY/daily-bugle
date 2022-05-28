@@ -175,9 +175,7 @@ export class UsualPage {
                 // 日常の種類ごとにデータを構築
                 ['everyday', 'week', 'weekday'].forEach((type) => {
                   this.usersOrdinariesOfToday[type] = this.usersOrdinaries
-                    .filter((usersOrdinary) => {
-                      return usersOrdinary.scene === type;
-                    })
+                    .filter((usersOrdinary) => usersOrdinary.scene === type)
                     .map((usersOrdinary) => {
                       if (type === 'everyday') {
                         return {
@@ -185,12 +183,10 @@ export class UsualPage {
                           startedOn: new Date(usersOrdinary.startedOn._seconds * 1000),
                         };
                       } else if (type === 'week' || type === 'weekday') {
-                        let tmpWeek = {};
+                        const tmpWeek = {};
                         for (let weekday of this.weekdays) {
                           tmpWeek[weekday.name] = [];
-                          const usersOrdinaryWeekName = usersOrdinary.weekdays.map((u) => {
-                            return u.name;
-                          });
+                          const usersOrdinaryWeekName = usersOrdinary.weekdays.map((u) => u.name);
                           const weekdayName = weekday.name;
                           if (usersOrdinaryWeekName.indexOf(weekdayName) !== -1) {
                             const content = {
