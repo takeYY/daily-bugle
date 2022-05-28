@@ -198,35 +198,6 @@ export class UsualPage {
       .finally(() => loading.dismiss());
   }
 
-  segmentChanged(event: any): void {
-    console.log(this.scene);
-  }
-
-  toggleReorderGroup(): void {
-    this.reorderGroup.disabled = !this.reorderGroup.disabled;
-  }
-
-  doReorder(event: any): void {
-    if (this.scene === 'everyday') {
-      //this.ordinariesWeekday.ordinary = event.detail.complete(this.ordinaries);
-      this.achievements
-        .filter((ow) => ow.scene === this.scene)
-        .map((ow) => ({ ...ow, ordinary: event.detail.complete(ow.usersOrdinaries.ordinary) }));
-      return;
-    }
-    if (this.scene === 'week') {
-      //this.ordinaries = event.detail.complete(this.ordinaries);
-      this.achievements
-        .filter((ow) => ow.scene === this.scene)
-        .map((ow) => ({ ...ow, ordinary: event.detail.complete(ow.usersOrdinaries.ordinary) }));
-      return;
-    }
-    this.achievements
-      .filter((ow) => ow.scene === 'weekday')
-      .map((ow) => ({ ...ow, ordinary: event.detail.complete(ow.usersOrdinaries.ordinary) }));
-    return;
-  }
-
   async editOrdinary(): Promise<void> {
     // TODO: 記載する
     console.log('@@@@編集ボタン押下！！');
