@@ -37,26 +37,7 @@ export class UsualPage {
   usersOrdinaries; //constで宣言可能
   achievements: any;
   usersOrdinariesOfToday: any;
-  tmp: {
-    everyday: [
-      {
-        name: string;
-        startedOn: Date;
-      },
-    ];
-    week: {
-      月曜日: [
-        {
-          name: string;
-          startedOn: Date;
-        },
-        {},
-        {},
-      ];
-      火曜日;
-    };
-    weekday: [];
-  };
+  ordinaries: any = {};
 
   private uid: string; //userID
   private user: IUser; // User
@@ -118,7 +99,6 @@ export class UsualPage {
         });
       })
       .then(() => {
-        console.log('@usersOrdinaries', this.usersOrdinaries);
         // 今日分のachievementsを取得
         this.achievementService
           .findAllByDate(this.uid, now)
@@ -127,7 +107,6 @@ export class UsualPage {
             this.achievements = res;
           })
           .then(() => {
-            console.log('@achievements', this.achievements);
             const tmpAchievements = [];
             // 今日分のachievementsがなかったら新たに生成
             if (!this.achievements.length) {
@@ -173,19 +152,25 @@ export class UsualPage {
               })
               .then(() => {
                 // 日常の種類ごとにデータを構築
+                this.ordinaries.everyday = [];
                 ['everyday', 'week', 'weekday'].forEach((type) => {
-                  this.usersOrdinariesOfToday[type] = this.usersOrdinaries
+                  //this.ordinaries[type] = ;
+                  const tmpWeek = {};
+                  for (const week of this.weekdays) {
+                    tmpWeek[week.name] = [];
+                  }
+                  this.usersOrdinaries
                     .filter((usersOrdinary) => usersOrdinary.scene === type)
-                    .map((usersOrdinary) => {
+                    .forEach((usersOrdinary) => {
                       if (type === 'everyday') {
-                        return {
+                        this.ordinaries[type].push({
                           name: usersOrdinary.ordinary.name,
                           startedOn: new Date(usersOrdinary.startedOn._seconds * 1000),
-                        };
+                        });
                       } else if (type === 'week' || type === 'weekday') {
-                        const tmpWeek = {};
-                        for (let weekday of this.weekdays) {
-                          tmpWeek[weekday.name] = [];
+                        //const tmpWeek = {};
+                        for (const weekday of this.weekdays) {
+                          //tmpWeek[weekday.name] = [];
                           const usersOrdinaryWeekName = usersOrdinary.weekdays.map((u) => u.name);
                           const weekdayName = weekday.name;
                           if (usersOrdinaryWeekName.indexOf(weekdayName) !== -1) {
@@ -194,17 +179,15 @@ export class UsualPage {
                               startedOn: new Date(usersOrdinary.startedOn._seconds * 1000),
                             };
                             tmpWeek[weekdayName].push(content);
-                          } else {
-                            tmpWeek[weekdayName].push({});
                           }
                         }
-
-                        return tmpWeek;
                       }
                     });
+                  if (type === 'week' || type === 'weekday') {
+                    this.ordinaries[type] = tmpWeek;
+                  }
                 });
               });
-            console.log('@usersOrdinaries', this.usersOrdinariesOfToday);
           });
       })
       .catch((error) => {
@@ -216,7 +199,6 @@ export class UsualPage {
   }
 
   segmentChanged(event: any): void {
-    //console.log(event);
     console.log(this.scene);
   }
 

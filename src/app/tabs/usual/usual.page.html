@@ -46,34 +46,25 @@
           </ng-container>
           <!-- 登録した日常をセグメントで表示 -->
           <ng-container *ngIf="scene !== 'today'">
-            <ng-container *ngFor="let userOrdinary of usersOrdinariesOfToday">
-              <ng-container *ngIf="s.scene === 'everyday'; then isEveryday; else notEveryday"> </ng-container>
-              <ng-template #isEveryday>
-                <ng-container *ngIf="userOrdinary.scene === s.scene">
-                  <ion-item>
-                    <ion-label>{{ userOrdinary.ordinary.name }}</ion-label>
-                    <ion-reorder slot="end"></ion-reorder>
-                  </ion-item>
-                </ng-container>
-              </ng-template>
-            </ng-container>
+            <ng-container *ngIf="s.scene === 'everyday'; then isEveryday; else notEveryday"> </ng-container>
+            <ng-template #isEveryday>
+              <ng-container *ngFor="let ordinary of ordinaries[s.scene]">
+                <ion-item>
+                  <ion-label>{{ ordinary.name }}</ion-label>
+                </ion-item>
+              </ng-container>
+            </ng-template>
 
             <ng-template #notEveryday>
               <ng-container *ngFor="let weekday of weekdays">
-                <ng-container *ngFor="let usersOrdinary of usersOrdinariesOfToday">
-                  <ng-container *ngIf="usersOrdinary.scene === s.scene">
-                    {{ usersOrdinary['createdAt']._seconds }}
-                    <ion-chip>
-                      <ion-label>{{ weekday.name }}</ion-label>
-                    </ion-chip>
-                    <ng-container *ngFor="let ordinaryWeekday of usersOrdinary.weekdays">
-                      <ng-container *ngIf="weekday.name === ordinaryWeekday.name">
-                        <ion-item>
-                          <ion-label>{{ usersOrdinary.ordinary.name }}</ion-label>
-                          <ion-reorder slot="end"></ion-reorder>
-                        </ion-item>
-                      </ng-container>
-                    </ng-container>
+                <ng-container *ngIf="ordinaries[s.scene][weekday.name][0]">
+                  <ion-chip disabled="true">
+                    <ion-label>{{ weekday.name }}</ion-label>
+                  </ion-chip>
+                  <ng-container *ngFor="let ordinary of ordinaries[s.scene][weekday.name]">
+                    <ion-item>
+                      <ion-label>{{ ordinary.name }}</ion-label>
+                    </ion-item>
                   </ng-container>
                 </ng-container>
               </ng-container>
