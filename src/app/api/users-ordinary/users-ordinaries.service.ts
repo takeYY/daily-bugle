@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, first, retry } from 'rxjs/operators';
 import { AchievementsService } from '../achievement/achievements.service';
-
+import { format } from 'date-fns';
 import { ConnectService } from '../connect.service';
 import { ErrorService } from '../error.service';
 
@@ -30,7 +30,7 @@ export class UsersOrdinariesService extends ConnectService {
     return this.http.get(`${this.basePath}/query`, params).pipe(retry(2), catchError(this.errorService.handleError));
   }
 
-  createUesrsOrdinaries(user, ordinary, weekdays, usersOrdinary, ordinariesWeekday) {
+  createUesrsOrdinaries(user, ordinary, weekdays, usersOrdinary, achievements) {
     // TODO: 以下のバリデーションなどを別の場所で処理するように
     if (!user) {
       alert('ログインが必要です！');
@@ -80,20 +80,30 @@ export class UsersOrdinariesService extends ConnectService {
                 weekdays: tmpWeekday,
               },
             };
-            this.achievementService
-              .postData(achievement)
-              .pipe(first())
-              .forEach((result) => {
-                ordinariesWeekday.push({
-                  ...result,
-                  scene: tmpWeekdayLength === 7 ? 'everyday' : tmpWeekdayLength === 1 ? 'week' : 'weekday',
+            // 登録した日常が今日行うものでなかった場合
+            if (
+              new Date(res['startedOn']['_seconds'] * 1000) <=
+                new Date(`${format(new Date(), 'YYYY-MM-DD')} 23:59:59`) &&
+              weekdays
+                .filter((weekday) => weekday.isChecked)
+                .map((weekday) => weekday.order % 7)
+                .indexOf(new Date().getDay()) !== -1
+            ) {
+              this.achievementService
+                .postData(achievement)
+                .pipe(first())
+                .forEach((result) => {
+                  achievements.push({
+                    ...result,
+                    scene: tmpWeekdayLength === 7 ? 'everyday' : tmpWeekdayLength === 1 ? 'week' : 'weekday',
+                  });
                 });
-              });
+            }
             weekdays.map((w) => {
               w.isChecked = false;
             });
           });
       });
-    return ordinariesWeekday;
+    return achievements;
   }
 }
