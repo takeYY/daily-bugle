@@ -40,24 +40,30 @@ export class OrdinaryModalComponent implements OnInit {
   async onCreateOrdinary() {
     if (this.scene === 'everyday') {
       this.weekdays = await this.weekdays.map((weekday) => {
-        return {
+        const result = {
           ...weekday,
           isChecked: true,
         };
+
+        return result;
       });
     } else if (this.scene === 'weekday') {
       this.weekdays = await this.weekdays.map((weekday) => {
-        return {
+        const result = {
           ...weekday,
-          isChecked: true ? [1, 2, 3, 4, 5].indexOf(weekday.order) !== -1 : false,
+          isChecked: [1, 2, 3, 4, 5].indexOf(weekday.order) !== -1,
         };
+
+        return result;
       });
     } else if (this.scene === 'weekend') {
       this.weekdays = await this.weekdays.map((weekday) => {
-        return {
+        const result = {
           ...weekday,
-          isChecked: true ? [6, 7].indexOf(weekday.order) !== -1 : false,
+          isChecked: [6, 7].indexOf(weekday.order) !== -1,
         };
+
+        return result;
       });
     }
 

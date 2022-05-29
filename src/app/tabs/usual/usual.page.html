@@ -1,21 +1,16 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-buttons slot="start">
+    <!-- TODO: 編集機能をつける -->
+    <!-- <ion-buttons slot="start">
       <ion-button (click)="editOrdinary()" icon-only="true" size="small">
         <ion-icon name="settings-sharp"></ion-icon>
       </ion-button>
-    </ion-buttons>
-
-    <ion-buttons slot="end">
-      <ion-button (click)="onCreateOrdinaryModal($event)" icon-only="true" size="small">
-        <ion-icon name="create-sharp"></ion-icon>
-      </ion-button>
-    </ion-buttons>
+    </ion-buttons> -->
 
     <ion-title>{{ title }}</ion-title>
   </ion-toolbar>
 
-  <ion-segment [(ngModel)]="scene" (ionChange)="segmentChanged($event)">
+  <ion-segment [(ngModel)]="scene">
     <ion-segment-button value="{{ s.scene }}" *ngFor="let s of scenes">
       <ion-label>{{ s.name }}</ion-label>
     </ion-segment-button>
@@ -26,61 +21,56 @@
   <div [ngSwitch]="scene">
     <ng-container *ngFor="let s of scenes">
       <div *ngSwitchCase="s.scene">
-        <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="true">
-          <!-- 今日分の日常をチェックボックスで表示 -->
-          <ng-container *ngIf="scene === 'today'">
-            <ng-container *ngFor="let achievement of achievements">
+        <!-- 今日分の日常をチェックボックスで表示 -->
+        <ng-container *ngIf="scene === 'today'">
+          <ng-container *ngFor="let achievement of achievements">
+            <ion-item>
+              <ion-checkbox
+                slot="start"
+                color="primary"
+                checked="{{ achievement.isAchieved }}"
+                disabled="{{ achievement.isAchieved }}"
+                [(ngModel)]="achievement.isAchieved"
+                (click)="onAchievedOrdinary($event, achievement)"
+              ></ion-checkbox>
+              <ion-label> {{ achievement.usersOrdinaries.ordinary.name }} </ion-label>
+              <ion-reorder slot="end"></ion-reorder>
+            </ion-item>
+          </ng-container>
+        </ng-container>
+        <!-- 登録した日常をセグメントで表示 -->
+        <ng-container *ngIf="scene !== 'today'">
+          <ng-container *ngIf="s.scene === 'everyday'; then isEveryday; else notEveryday"> </ng-container>
+          <ng-template #isEveryday>
+            <ng-container *ngFor="let ordinary of ordinaries[s.scene]">
               <ion-item>
-                <ion-checkbox
-                  slot="start"
-                  color="primary"
-                  checked="{{ achievement.isAchieved }}"
-                  disabled="{{ achievement.isAchieved }}"
-                  [(ngModel)]="achievement.isAchieved"
-                  (click)="onAchievedOrdinary($event, achievement)"
-                ></ion-checkbox>
-                <ion-label> {{ achievement.usersOrdinaries.ordinary.name }} </ion-label>
-                <ion-reorder slot="end"></ion-reorder>
+                <ion-label>{{ ordinary.name }}</ion-label>
               </ion-item>
             </ng-container>
-          </ng-container>
-          <!-- 登録した日常をセグメントで表示 -->
-          <ng-container *ngIf="scene !== 'today'">
-            <ng-container *ngFor="let userOrdinary of usersOrdinariesOfToday">
-              <ng-container *ngIf="s.scene === 'everyday'; then isEveryday; else notEveryday"> </ng-container>
-              <ng-template #isEveryday>
-                <ng-container *ngIf="userOrdinary.scene === s.scene">
+          </ng-template>
+
+          <ng-template #notEveryday>
+            <ng-container *ngFor="let weekday of weekdays">
+              <ng-container *ngIf="ordinaries[s.scene][weekday.name][0]">
+                <ion-chip disabled="true">
+                  <ion-label>{{ weekday.name }}</ion-label>
+                </ion-chip>
+                <ng-container *ngFor="let ordinary of ordinaries[s.scene][weekday.name]">
                   <ion-item>
-                    <ion-label>{{ userOrdinary.ordinary.name }}</ion-label>
-                    <ion-reorder slot="end"></ion-reorder>
+                    <ion-label>{{ ordinary.name }}</ion-label>
                   </ion-item>
                 </ng-container>
-              </ng-template>
-            </ng-container>
-
-            <ng-template #notEveryday>
-              <ng-container *ngFor="let weekday of weekdays">
-                <ng-container *ngFor="let usersOrdinary of usersOrdinariesOfToday">
-                  <ng-container *ngIf="usersOrdinary.scene === s.scene">
-                    {{ usersOrdinary['createdAt']._seconds }}
-                    <ion-chip>
-                      <ion-label>{{ weekday.name }}</ion-label>
-                    </ion-chip>
-                    <ng-container *ngFor="let ordinaryWeekday of usersOrdinary.weekdays">
-                      <ng-container *ngIf="weekday.name === ordinaryWeekday.name">
-                        <ion-item>
-                          <ion-label>{{ usersOrdinary.ordinary.name }}</ion-label>
-                          <ion-reorder slot="end"></ion-reorder>
-                        </ion-item>
-                      </ng-container>
-                    </ng-container>
-                  </ng-container>
-                </ng-container>
               </ng-container>
-            </ng-template>
-          </ng-container>
-        </ion-reorder-group>
+            </ng-container>
+          </ng-template>
+        </ng-container>
       </div>
     </ng-container>
   </div>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="onCreateOrdinaryModal($event)" icon-only="true">
+      <ion-icon name="add-sharp"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>
