@@ -152,23 +152,23 @@ export class HomePage {
     this.bars[0] = new Chart(this.radarChart.nativeElement, {
       type: 'radar',
       data: {
-        labels: ['月', '火', '水', '木', '金', '土', '日'],
+        labels: ['日', '月', '火', '水', '木', '金', '土'],
         datasets: this.achievementsRadar,
         // モック用データ
         /* datasets: [
           {
             label: '朝食を摂る',
-            data: [100, 89, 75, 90, 45, 25, 30],
+            data: [30, 100, 89, 75, 90, 45, 25],
             borderWidth: 1,
           },
           {
             label: '歯を磨く',
-            data: [100, 100, 100, 100, 100, 95, 97],
+            data: [97, 100, 100, 100, 100, 100, 95],
             borderWidth: 1,
           },
           {
             label: 'クイックルワイパー',
-            data: [90, 95, 85, 75, 70, 90, 95],
+            data: [95, 90, 95, 85, 75, 70, 90],
             borderWidth: 1,
           },
         ], */
@@ -195,7 +195,9 @@ export class HomePage {
     const allAchievementData = this.achievementsByOrdinary.map((achievement) => achievement.hasAchieved);
     allAchievementLabels.push('未達成');
     allAchievementData.push(
-      this.achievementsByOrdinary.map((achievement) => achievement.count).reduce((sum, len) => sum + len, 0),
+      this.achievementsByOrdinary
+        .map((achievement) => achievement.count - achievement.hasAchieved)
+        .reduce((sum, len) => sum + len, 0),
     );
     this.bars[1] = new Chart(this.allAchievementsPie.nativeElement, {
       type: 'pie',
